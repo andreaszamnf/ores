@@ -329,7 +329,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
 }
 .copy code { font: inherit; overflow-wrap: anywhere; }
 .copy button { flex: none; min-height: 30px; padding: 4px 10px; border: 0; border-radius: 8px; background: var(--surface); color: var(--accent-strong); font: 600 13px var(--font); }
-.preview { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; padding: 7px 10px; border-radius: 10px; background: var(--surface-2); font-size: 14px; overflow-wrap: anywhere; }
+.preview { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: fit-content; max-width: 100%; margin: 6px 0; padding: 7px 10px; border-radius: 10px; background: var(--surface-2); font-size: 14px; overflow-wrap: anywhere; }
 .var { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--btn); color: #fff; font-size: 13px; font-weight: 600; }
 .url-warn { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
 .done-row { display: flex; justify-content: flex-end; margin-top: 6px; }
@@ -474,7 +474,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
         <span class="copy"><code>yyyy-MM-dd HH:mm:ss</code><button type="button" data-copy="yyyy-MM-dd HH:mm:ss">Αντιγραφή</button></span></li>
       <li>Γύρνα πίσω, πάτα αμέσως μετά το μπλε κουτάκι, βάλε ένα κενό και γράψε <span class="copy"><code>IN</code><button type="button" data-copy="IN">Αντιγραφή</button></span><br>
         Πρέπει να φαίνεται έτσι: <span class="preview"><span class="var">Τρέχουσα ημερομηνία</span> IN</span></li>
-      <li>Στο αρχείο γράψε <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span> (θα μπει στον φάκελο Shortcuts του iCloud Drive). Αν υπάρχει <b>Νέα γραμμή</b> <span class="en">(Make New Line)</span>, άνοιξέ το. Πάτα <b>Τέλος</b> <span class="en">(Done)</span>.</li>
+      <li>Πάτα στο αρχείο και διάλεξε το <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span> απευθείας στο <b>iCloud Drive</b>, όχι μέσα σε φάκελο. Αν δεν υπάρχει ακόμα, δες πιο κάτω το «Ζητάει να διαλέξω αρχείο, αλλά δεν υπάρχει». Αν αντί να διαλέξεις σου ζητάει να γράψεις όνομα, γράψε ores.txt (τότε μπαίνει στον φάκελο Shortcuts).<br>
+        Αν υπάρχει <b>Νέα γραμμή</b> <span class="en">(Make New Line)</span>, άνοιξέ το. Πάτα <b>Τέλος</b> <span class="en">(Done)</span>.</li>
     </ol>
     <div class="done-row"><button class="btn sm" type="button" data-action="step:1">Έγινε</button></div>
   </section>
@@ -494,15 +495,23 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <div class="step-head"><span class="step-num">3</span><div><h2>Το εικονίδιο «Οι ώρες μου»</h2><p class="why">Ένα κουμπί στην αρχική οθόνη που ανοίγει αυτή την εφαρμογή με τις τελευταίες ώρες σου.</p></div></div>
     <ol>
       <li>Στις <b>Συντομεύσεις</b>, στην καρτέλα <b>Συντομεύσεις</b> <span class="en">(Shortcuts)</span>, πάτα το <b>+</b>.</li>
-      <li>Πρόσθεσε <b>Λήψη αρχείου από φάκελο</b> <span class="en">(Get File from Folder)</span>. Φάκελος: <b>Shortcuts</b>, αρχείο: <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span><br>Άνοιξε τις επιλογές της ενέργειας και κλείσε το <b>Σφάλμα αν δεν βρεθεί</b> <span class="en">(Error If Not Found)</span>.</li>
-      <li>Πρόσθεσε <b>Κωδικοποίηση URL</b> <span class="en">(URL Encode)</span>.</li>
+      <li>Πρόσθεσε <b>Λήψη αρχείου από φάκελο</b> <span class="en">(Get File from Folder)</span>. Για φάκελο άφησε το <b>iCloud Drive</b> και στη διαδρομή γράψε <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span>
+        <span class="preview">Λήψη αρχείου από <span class="var">iCloud Drive</span> στη διαδρομή <span class="var">ores.txt</span></span>
+        Αν το ores.txt είναι μέσα στον φάκελο Shortcuts, γράψε <b>Shortcuts/ores.txt</b>. Μετά πάτα το βελάκι της ενέργειας και κλείσε το <b>Σφάλμα αν δεν βρεθεί</b> <span class="en">(Error If Not Found)</span>.</li>
+      <li>Πρόσθεσε <b>Κωδικοποίηση URL</b> <span class="en">(URL Encode)</span>. Θα γράφει μόνο του:
+        <span class="preview">Κωδικοποίηση URL σε <span class="var">Αρχείο</span></span></li>
       <li>Πρόσθεσε <b>Κείμενο</b> <span class="en">(Text)</span> και επικόλλησε μέσα:<br>
         <span class="copy"><code id="shortcutUrl"></code><button type="button" id="copyUrl" data-copy="">Αντιγραφή</button></span><br>
         Αμέσως μετά, <b>χωρίς κενό</b>, διάλεξε από τη γραμμή πάνω από το πληκτρολόγιο το μπλε κουτάκι <b>Κωδικοποιημένο κείμενο URL</b> <span class="en">(URL Encoded Text)</span>.
         <span class="preview"><span id="urlPreview"></span><span class="var">Κωδικοποιημένο κείμενο URL</span></span>
+        Το κουτάκι πρέπει να είναι <b>μπλε</b>. Αν βγει κόκκινο, σβήσ' το και διάλεξέ το ξανά.
         <p class="url-warn" id="urlWarn" hidden>Αυτή η διεύθυνση είναι τοπική, από τον υπολογιστή. Άνοιξε αυτή τη σελίδα στο iPhone από τη διεύθυνση του ίντερνετ και θα δεις εδώ τη σωστή.</p></li>
-      <li>Πρόσθεσε <b>Άνοιγμα URL</b> <span class="en">(Open URLs)</span>.</li>
-      <li>Πάτα το όνομα πάνω πάνω → <b>Μετονομασία</b> <span class="en">(Rename)</span> → <span class="copy"><code>Οι ώρες μου</code><button type="button" data-copy="Οι ώρες μου">Αντιγραφή</button></span></li>
+      <li>Πρόσθεσε <b>Άνοιγμα URL</b> <span class="en">(Open URLs)</span>. Πρέπει να γράφει σκέτο:
+        <span class="preview">Άνοιγμα <span class="var">Κείμενο</span></span>
+        Μη γράψεις τίποτα άλλο μέσα. Αν έχει μπει κάτι, σβήσ' το και διάλεξε το μπλε <b>Κείμενο</b> από τη γραμμή πάνω από το πληκτρολόγιο.</li>
+      <li>Πάτα το όνομα πάνω πάνω (γράφει κάτι σαν «Άνοιγμα URL») → <b>Μετονομασία</b> <span class="en">(Rename)</span> → <span class="copy"><code>Οι ώρες μου</code><button type="button" data-copy="Οι ώρες μου">Αντιγραφή</button></span><br>
+        Το «Οι ώρες μου» μπαίνει μόνο ως όνομα, όχι μέσα στις ενέργειες.</li>
+      <li>Πάτα το <b>▶</b> κάτω δεξιά για δοκιμή. Πρέπει να ανοίξει αυτή η σελίδα στο Safari.</li>
       <li>Πάτα το κουμπί κοινοποίησης → <b>Προσθήκη στην οθόνη Αφετηρίας</b> <span class="en">(Add to Home Screen)</span>. Από εδώ και πέρα, άνοιγε τις ώρες σου από αυτό το εικονίδιο.</li>
     </ol>
     <div class="done-row"><button class="btn sm" type="button" data-action="step:3">Έγινε</button></div>
@@ -526,7 +535,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <li>Κράτα το Wi‑Fi του κινητού ανοιχτό. Αν κλείσει το κινητό στη δουλειά, η μέρα θα έχει σημάδι και η εφαρμογή θα σου προτείνει την ώρα που φεύγεις συνήθως.</li>
       <li>Το iPhone μπορεί να καταλάβει ότι έφυγες ένα-δυο λεπτά αργότερα.</li>
       <li>Άνοιγε την εφαρμογή πάντα από το εικονίδιο <b>Οι ώρες μου</b>. Έτσι φέρνει τις τελευταίες ώρες.</li>
-      <li>Οι ώρες φυλάγονται στο iCloud Drive (Shortcuts → ores.txt) και οι διορθώσεις σου στο Safari. Τίποτα δεν στέλνεται πουθενά.</li>
+      <li>Οι ώρες φυλάγονται στο αρχείο ores.txt στο iCloud Drive και οι διορθώσεις σου στο Safari. Τίποτα δεν στέλνεται πουθενά.</li>
     </ul>
   </section>
 
@@ -534,12 +543,20 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <h2 class="sr-only">Αν κάτι δεν πάει καλά</h2>
     <details>
       <summary>Ζητάει να διαλέξω αρχείο, αλλά δεν υπάρχει</summary>
-      <p>Πάτα εδώ και διάλεξε <b>Αποθήκευση στα Αρχεία</b> <span class="en">(Save to Files)</span> → iCloud Drive → Shortcuts. Μετά διάλεξέ το στην ενέργεια.</p>
+      <p>Πάτα εδώ και διάλεξε <b>Αποθήκευση στα Αρχεία</b> <span class="en">(Save to Files)</span> → iCloud Drive. Μετά διάλεξέ το στην ενέργεια.</p>
       <button class="btn sm" type="button" data-action="starter">Κατέβασε κενό ores.txt</button>
     </details>
     <details>
       <summary>Ο αυτοματισμός με ρωτάει πριν τρέξει</summary>
       <p>Άνοιξέ τον από την καρτέλα Αυτοματισμός και διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span>.</p>
+    </details>
+    <details>
+      <summary>Λέει ότι δεν μπορεί να κάνει μετατροπή σε URL</summary>
+      <p>Στη συντόμευση «Οι ώρες μου», η τελευταία ενέργεια πρέπει να γράφει σκέτο <b>Άνοιγμα «Κείμενο»</b>. Σβήσε ό,τι άλλο έχει μπει μέσα (π.χ. «Οι ώρες μου») και διάλεξε το μπλε <b>Κείμενο</b>. Αν στο «Κείμενο» το κουτάκι «Κωδικοποιημένο κείμενο URL» είναι κόκκινο, σβήσ' το και διάλεξέ το ξανά.</p>
+    </details>
+    <details>
+      <summary>Ανοίγει, αλλά λέει ότι δεν ήρθαν ώρες</summary>
+      <p>Αν μετά τη ρύθμιση δεν έχεις πάει ακόμα στη δουλειά, είναι φυσιολογικό: το ores.txt γράφεται την πρώτη φορά που το κινητό πιάνει το Wi‑Fi της δουλειάς. Αλλιώς άνοιξε <b>Αρχεία → iCloud Drive</b> και δες πού είναι το ores.txt. Στη «Λήψη αρχείου» βάλε την ίδια θέση: αν είναι απευθείας στο iCloud Drive, σκέτο <b>ores.txt</b>· αν είναι στον φάκελο Shortcuts, <b>Shortcuts/ores.txt</b>. Το όνομα πρέπει να είναι ακριβώς ίδιο, με λατινικά.</p>
     </details>
     <details>
       <summary>Δεν βλέπω τις σημερινές ώρες</summary>
@@ -697,6 +714,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     state.overrides = store.get('overrides', {}) || {};
     state.bad = store.get('bad', []) || [];
     state.updatedAt = store.get('updatedAt', null);
+    state.emptyAt = store.get('emptyAt', null);
     state.source = store.get('source', null);
     state.settings = { ...DEFAULTS, ...(store.get('settings', {}) || {}) };
     state.guide = store.get('guide', {}) || {};
@@ -722,9 +740,13 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (state.demo) exitDemo(false);
     const raw = String(text || '').trim();
     if (!raw) {
-      toast(source === 'shortcut'
-        ? 'Δεν ήρθαν ώρες από το iPhone. Το ores.txt δεν υπάρχει ακόμα ή είναι άδειο.'
-        : 'Το αρχείο είναι άδειο.');
+      if (source === 'shortcut') {
+        // Η συντόμευση δουλεύει, αλλά δεν βρήκε το ores.txt (ή είναι άδειο). Το μήνυμα μένει πάνω πάνω.
+        state.emptyAt = Date.now();
+        store.set('emptyAt', state.emptyAt);
+        dismissed.delete('empty');
+      }
+      toast(source === 'shortcut' ? 'Δεν ήρθαν ώρες από το iPhone' : 'Το αρχείο είναι άδειο.');
       return;
     }
     const parsed = O.parseLog(raw);
@@ -732,6 +754,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     state.events = O.mergeEvents(state.events, parsed.events);
     state.bad = parsed.bad.slice(0, 20);
     state.updatedAt = Date.now();
+    state.emptyAt = null;
+    store.set('emptyAt', null);
     state.source = source;
     state.month = O.dateKey(Date.now()).slice(0, 7);
     saveData();
@@ -884,11 +908,21 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (i.level === 'info') actions.push([`dismiss:${i.id}`, 'Εντάξει']);
     return noticeHTML(i.level, i.title, i.text, actions);
   }
+  // Η συντόμευση άνοιξε την εφαρμογή χωρίς ώρες: είτε δεν έχει γραφτεί ακόμα τίποτα, είτε ψάχνει σε άλλο φάκελο.
+  const emptyPending = () => !!state.emptyAt && (!state.updatedAt || state.emptyAt > state.updatedAt);
+  function emptyNoticeHTML(withActions = true) {
+    const where = 'Άνοιξε την εφαρμογή Αρχεία → iCloud Drive και δες πού είναι το ores.txt. Στη συντόμευση «Οι ώρες μου», η «Λήψη αρχείου» πρέπει να ψάχνει εκεί: αν είναι απευθείας στο iCloud Drive, διαδρομή ores.txt· αν είναι στον φάκελο Shortcuts, Shortcuts/ores.txt.';
+    const actions = withActions ? [['guide:short', 'Δες τις οδηγίες'], ['dismiss:empty', 'Εντάξει']] : [];
+    return state.events.length
+      ? noticeHTML('warn', 'Η συντόμευση δεν βρήκε το ores.txt', `Οι ώρες που είχαν έρθει πριν είναι εδώ, αλλά νέες δεν ήρθαν. Μήπως το αρχείο μετακινήθηκε ή άλλαξε όνομα; ${where}`, actions)
+      : noticeHTML('info', 'Η συντόμευση δουλεύει, αλλά δεν βρήκε ώρες', `Αν μετά τη ρύθμιση δεν έχεις πάει ακόμα στη δουλειά, είναι φυσιολογικό: το ores.txt γράφεται την πρώτη φορά που το κινητό πιάνει το Wi‑Fi της δουλειάς. Αν έχεις πάει: ${where}`, actions);
+  }
   function renderNotices(now) {
     const parts = [];
     if (state.demo) {
       parts.push(noticeHTML('info', 'Αυτό είναι παράδειγμα', 'Οι ώρες είναι φανταστικές, για να δεις πώς θα φαίνεται η εφαρμογή.', [['exit-demo', 'Κλείσιμο παραδείγματος']]));
     } else {
+      if (emptyPending() && !dismissed.has('empty')) parts.push(emptyNoticeHTML());
       const issues = O.diagnose({ events: state.events, days: state.days, bad: state.bad, now }).filter(i => !dismissed.has(i.id));
       issues.slice(0, 2).forEach(i => parts.push(issueHTML(i)));
       if (state.events.length && state.updatedAt && now - state.updatedAt > 12 * HOUR) {
@@ -1269,6 +1303,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const now = Date.now();
     const box = $('#health');
     if (state.demo) { box.innerHTML = '<div class="ok-line">Τώρα βλέπεις παράδειγμα. Κλείσ\' το για να δεις τον έλεγχο των δικών σου δεδομένων.</div>'; return; }
+    if (emptyPending()) { box.innerHTML = emptyNoticeHTML(false); return; }
     if (!state.events.length && !state.bad.length) {
       box.innerHTML = '<div class="ok-line">Δεν έχουν έρθει ακόμα ώρες από το iPhone. Κάνε τη ρύθμιση και μετά άνοιξε την εφαρμογή από το εικονίδιο «Οι ώρες μου».</div>';
       return;
@@ -1452,8 +1487,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     clear: () => {
       if (state.demo) { exitDemo(); closeDialogs(); return; }
       if (!window.confirm('Να σβηστούν οι ώρες και οι διορθώσεις από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν.')) return;
-      ['log', 'overrides', 'bad', 'updatedAt', 'source'].forEach(k => store.remove(k));
-      Object.assign(state, { events: [], overrides: {}, bad: [], updatedAt: null, source: null });
+      ['log', 'overrides', 'bad', 'updatedAt', 'source', 'emptyAt'].forEach(k => store.remove(k));
+      Object.assign(state, { events: [], overrides: {}, bad: [], updatedAt: null, source: null, emptyAt: null });
       closeDialogs();
       render();
       toast('Σβήστηκαν');
