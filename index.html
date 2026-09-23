@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex">
+<meta name="description" content="Μετράει αυτόματα τις ώρες δουλειάς από τις συνδέσεις του iPhone στο Wi‑Fi της δουλειάς.">
+<title>Οι ώρες μου</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%232a78d6'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='M32 22v11l7 4' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #f2f1ec;
+  --ink: #121211;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e7e5de;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, .09);
+  --accent: #2a78d6;
+  --accent-strong: #1c5cab;
+  --accent-track: #cde2fb;
+  --accent-wash: #edf4fd;
+  --btn: #2a78d6;
+  --deemph: #c3c2b7;
+  --good: #0ca30c;
+  --warn: #fab219;
+  --warn-wash: #fff5df;
+  --critical: #d03b3b;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 6px 20px rgba(0, 0, 0, .045);
+  --radius: 20px;
+  --cols: 44px minmax(0, 1fr) 86px;
+  --font: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #111110;
+    --surface: #1a1a19;
+    --surface-2: #252523;
+    --ink: #f5f4f0;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, .08);
+    --accent: #3987e5;
+    --accent-strong: #86b6ef;
+    --accent-track: #0d366b;
+    --accent-wash: rgba(57, 135, 229, .14);
+    --btn: #256abf;
+    --deemph: #52514e;
+    --warn-wash: rgba(250, 178, 25, .11);
+    --critical: #e66767;
+    --shadow: none;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font: 16px/1.45 var(--font); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+body:has(dialog[open]) { overflow: hidden; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.app {
+  max-width: 560px; margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 40px) max(16px, env(safe-area-inset-left, 0px));
+}
+svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- Κεφαλίδα ---------- */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 18px; }
+.top .date { margin: 0; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.top h1 { margin: 2px 0 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
+.icon-btn {
+  flex: none; width: 44px; height: 44px; display: grid; place-items: center; padding: 0;
+  border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2);
+}
+.icon-btn svg.i { width: 22px; height: 22px; }
+.icon-btn.sm { width: 38px; height: 38px; }
+.icon-btn.sm svg.i { width: 18px; height: 18px; }
+.icon-btn:disabled { opacity: .35; cursor: default; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+/* ---------- Ειδοποιήσεις ---------- */
+.notice {
+  display: flex; align-items: flex-start; gap: 12px; margin: 0 0 12px; padding: 14px 16px 14px 14px;
+  border-radius: 16px; border: 1px solid var(--border); background: var(--warn-wash);
+}
+.notice.info { background: var(--accent-wash); }
+.notice .ic { flex: none; width: 22px; height: 22px; margin-top: 1px; }
+.notice h3 { margin: 0; font-size: 15px; line-height: 1.35; }
+.notice p { margin: 4px 0 0; font-size: 14px; color: var(--ink-2); }
+.notice .links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; }
+.link {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0; border: 0; background: none;
+  color: var(--accent-strong); font-weight: 600; font-size: 14px; text-decoration: none;
+}
+
+/* ---------- Σήμερα ---------- */
+.hero { padding: 18px 18px 16px; }
+.hero[role="button"] { cursor: pointer; }
+.hero-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.hero-top .right { font-weight: 500; }
+.live { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); }
+.dot { position: relative; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--good); }
+.dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--good); animation: ping 2s cubic-bezier(0, 0, .2, 1) infinite; }
+.dot.sm { width: 8px; height: 8px; }
+@keyframes ping { 0% { transform: scale(1); opacity: .55; } 80%, 100% { transform: scale(2.8); opacity: 0; } }
+.big { margin: 8px 0 2px; font-size: 56px; line-height: 1; font-weight: 700; letter-spacing: -.035em; }
+.big .u { margin: 0 10px 0 2px; font-size: .46em; font-weight: 600; letter-spacing: 0; color: var(--ink-2); }
+.big .u:last-child { margin-right: 0; }
+.big.quiet { margin: 10px 0 4px; font-size: 25px; line-height: 1.2; letter-spacing: -.01em; }
+.hero-sub { margin: 6px 0 0; font-size: 15px; color: var(--ink-2); }
+.hero-sub b { color: var(--ink); }
+.meter { height: 8px; margin-top: 16px; border-radius: 99px; background: var(--accent-track); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 99px; background: var(--accent); transition: width .6s ease; }
+.meter-meta { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+.meter-meta b { color: var(--ink); font-weight: 650; }
+.warnline { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; font-size: 14px; color: var(--ink-2); }
+.warnline svg { width: 16px; height: 16px; flex: none; }
+
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.tile { padding: 14px 16px 15px; }
+.tile .k { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.tile .v { margin-top: 4px; font-size: 26px; line-height: 1.1; font-weight: 700; letter-spacing: -.02em; }
+.tile .v .u { margin: 0 6px 0 1px; font-size: .6em; font-weight: 600; letter-spacing: 0; color: var(--ink-2); }
+.tile .v .u:last-child { margin-right: 0; }
+.tile .s { margin-top: 5px; font-size: 13px; line-height: 1.35; color: var(--ink-2); }
+
+/* ---------- Μήνας ---------- */
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 30px 0 12px; }
+.section-head h2 { margin: 0; font-size: 21px; line-height: 1.2; letter-spacing: -.015em; }
+.section-head h2 .sub { display: block; margin-top: 3px; font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--ink-2); }
+.month-nav { display: flex; gap: 8px; }
+.month-card { padding: 14px 14px 12px; }
+.stats { display: flex; flex-wrap: wrap; margin: 0 0 4px; }
+.stats > div { flex: 1 1 45%; min-width: 0; padding: 2px 4px 12px; }
+@media (min-width: 480px) { .stats > div { flex-basis: 22%; } }
+.stats dt { font-size: 13px; color: var(--ink-2); }
+.stats dd { margin: 2px 0 0; font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
+
+.chart { position: relative; margin: 0; }
+.chart .plot svg { display: block; overflow: visible; }
+.chart .tick { font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .target { stroke: var(--ink-2); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .bar { fill: var(--accent); }
+.chart .bar.partial { fill: var(--deemph); }
+.chart .bar.open { fill: var(--accent); opacity: .5; }
+.chart .hl { fill: var(--accent-wash); opacity: 0; }
+.chart .flag { fill: var(--warn); stroke: var(--surface); stroke-width: 2; }
+.chart .hit { fill: transparent; cursor: pointer; outline: none; }
+.chart .slot.on .hl { opacity: 1; }
+.chart .slot.on .bar:not(.partial) { fill: var(--accent-strong); opacity: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 6px 0 0 30px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lk-line { width: 14px; height: 0; border-top: 1px solid var(--ink-2); }
+.lk-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+.tip {
+  position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 10px));
+  display: grid; gap: 1px; padding: 8px 12px; border-radius: 12px; border: 0; text-align: left;
+  background: var(--ink); color: var(--page); font-size: 13px; line-height: 1.35; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+.tip b { font-size: 17px; line-height: 1.2; }
+.tip .k { opacity: .78; }
+.tip .more { margin-top: 3px; font-weight: 600; opacity: .9; }
+
+.list-head {
+  display: grid; grid-template-columns: var(--cols); gap: 12px; align-items: end;
+  padding: 18px 14px 4px; border: 1px solid transparent; font-size: 12px; color: var(--muted);
+}
+.list-head .r { text-align: right; }
+.scale { position: relative; height: 15px; }
+.scale span { position: absolute; top: 0; font-variant-numeric: tabular-nums; }
+.days { margin: 0; padding: 0; list-style: none; }
+.week-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 16px 6px 8px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.week-h .num { color: var(--ink); }
+.day {
+  display: grid; grid-template-columns: var(--cols); gap: 12px; align-items: center; width: 100%;
+  margin: 0 0 8px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--border);
+  background: var(--surface); text-align: left;
+}
+.day.today { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.day.off { opacity: .6; }
+.day.off .d-dur { text-decoration: line-through; }
+.d-date { display: block; text-align: center; }
+.d-date b { display: block; font-size: 21px; line-height: 1.05; font-weight: 700; }
+.d-date small { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-2); }
+.d-mid { display: block; min-width: 0; }
+.d-times { display: block; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d-track { position: relative; display: block; height: 6px; margin-top: 8px; border-radius: 99px; background: var(--surface-2); }
+.d-track i { position: absolute; top: 0; bottom: 0; min-width: 6px; border-radius: 99px; background: var(--accent); }
+.d-track i.partial { background: var(--deemph); }
+.d-track i.open { opacity: .5; }
+.d-note { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 7px; font-size: 13px; line-height: 1.3; color: var(--ink-2); }
+.d-note .it { display: inline-flex; align-items: center; gap: 5px; }
+.d-note svg { width: 14px; height: 14px; flex: none; }
+.d-right { display: block; text-align: right; }
+.d-dur { display: block; font-size: 16px; font-weight: 650; white-space: nowrap; }
+.d-ot { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 99px; background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.empty-month { padding: 26px 10px; text-align: center; color: var(--ink-2); }
+
+/* ---------- Κουμπιά ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 18px;
+  border-radius: 14px; border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  font-size: 16px; font-weight: 600; text-decoration: none; text-align: center;
+}
+.btn.primary { border-color: transparent; background: var(--btn); color: #fff; }
+.btn.ghost { background: transparent; }
+.btn.block { width: 100%; }
+.btn.sm { min-height: 38px; padding: 7px 14px; border-radius: 12px; font-size: 15px; }
+.btn.danger { color: var(--critical); }
+.row-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.foot { margin-top: 30px; text-align: center; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.foot .links { display: flex; justify-content: center; gap: 18px; margin-bottom: 6px; }
+.foot .private { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; }
+.foot .private svg.i { width: 14px; height: 14px; }
+
+/* ---------- Καλωσόρισμα ---------- */
+.welcome { padding: 26px 20px 20px; text-align: center; }
+.welcome .art { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 18px; background: var(--accent-wash); color: var(--accent-strong); }
+.welcome .art svg.i { width: 32px; height: 32px; }
+.welcome h2 { margin: 0; font-size: 24px; line-height: 1.2; letter-spacing: -.02em; }
+.welcome > p { margin: 10px 0 0; color: var(--ink-2); }
+.features { display: grid; gap: 12px; margin: 20px 0 22px; padding: 0; list-style: none; text-align: left; }
+.features li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; }
+.features svg.i { margin-top: 1px; color: var(--accent-strong); }
+.welcome .btn + .btn { margin-top: 10px; }
+.welcome .link { margin-top: 12px; }
+
+/* ---------- Παράθυρα ---------- */
+dialog {
+  width: 100%; max-width: 560px; max-height: 100%; margin: auto auto 0; padding: 0;
+  border: 0; background: transparent; color: inherit; overflow: visible;
+}
+dialog::backdrop { background: rgba(0, 0, 0, .42); }
+.sheet {
+  max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain;
+  padding: 10px 18px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  border-radius: 24px 24px 0 0; background: var(--surface);
+}
+dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes rise { from { transform: translateY(28px); opacity: .5; } to { transform: none; opacity: 1; } }
+@media (min-width: 620px) { dialog { margin: auto; } .sheet { border-radius: 24px; } }
+.grip { width: 38px; height: 5px; margin: 0 auto 12px; border-radius: 99px; background: var(--grid); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.sheet-head h3 { margin: 0; font-size: 20px; line-height: 1.25; letter-spacing: -.01em; }
+.sheet h4 { margin: 20px 0 8px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
+.evs { display: flex; flex-wrap: wrap; gap: 6px; }
+.ev { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; background: var(--surface-2); font-size: 13px; color: var(--ink-2); }
+.ev b { font-weight: 650; color: var(--ink); }
+.ev i { width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+.ev.out i { background: var(--muted); }
+.muted { color: var(--ink-2); font-size: 14px; }
+.suggest {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 16px 0 0; padding: 12px 12px 12px 14px; border-radius: 14px; background: var(--accent-wash); font-size: 14px;
+}
+.suggest p { margin: 0; }
+.suggest .btn { flex: none; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.field { display: grid; gap: 6px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.field input {
+  display: block; width: 100%; min-height: 50px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--ink); font-size: 17px; font-weight: 500; text-align: left;
+  -webkit-appearance: none; appearance: none;
+}
+.field input::-webkit-date-and-time-value { text-align: left; }
+.field .hint { font-size: 13px; font-weight: 400; }
+.fields { display: grid; gap: 16px; }
+.calc { margin: 12px 0 0; font-size: 15px; color: var(--ink-2); }
+.calc b { color: var(--ink); }
+.check { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 6px; font-size: 16px; }
+.check input { width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
+.sheet-actions { display: flex; gap: 10px; margin-top: 18px; }
+.sheet-actions .btn { flex: 1; }
+.menu { display: grid; gap: 10px; margin-top: 14px; }
+.menu .btn { justify-content: flex-start; }
+.menu .btn small { display: block; font-size: 13px; font-weight: 400; color: var(--ink-2); }
+.menu .btn span { text-align: left; }
+.health .notice { margin: 0 0 10px; }
+.ok-line { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); font-size: 14px; }
+.ok-line svg { width: 20px; height: 20px; flex: none; color: var(--good); }
+
+/* ---------- Οδηγός ---------- */
+.guide .back { margin: 0 0 6px -10px; padding-left: 6px; border-color: transparent; color: var(--accent-strong); }
+.guide h1 { margin: 0; font-size: 30px; line-height: 1.15; letter-spacing: -.02em; }
+.lead { margin: 10px 0 0; font-size: 16px; color: var(--ink-2); }
+.callout { margin: 16px 0 0; padding: 14px 16px; border-radius: 16px; background: var(--accent-wash); font-size: 15px; }
+.callout p { margin: 0; }
+.callout .btn { margin-top: 12px; }
+.progress-line { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.progress-line .meter { flex: 1; margin: 0; height: 6px; }
+.step { margin: 0 0 14px; padding: 18px 18px 16px; scroll-margin-top: 16px; }
+.step-head { display: flex; align-items: flex-start; gap: 12px; }
+.step-num { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent-wash); color: var(--accent-strong); font-weight: 700; }
+.step.done .step-num { background: var(--good); color: #fff; }
+.step h2 { margin: 4px 0 0; font-size: 18px; line-height: 1.3; }
+.step .why { margin: 3px 0 0; font-size: 14px; color: var(--ink-2); }
+.step ol, .step ul { margin: 14px 0 0; padding-left: 22px; }
+.step li { margin: 0 0 11px; padding-left: 3px; }
+.step li::marker { color: var(--muted); font-weight: 600; }
+.step .btn { margin-top: 4px; }
+.en { color: var(--muted); font-size: .92em; }
+.copy {
+  display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin: 4px 0 2px; padding: 4px 4px 4px 10px;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2);
+  font: 600 15px/1.35 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--ink); vertical-align: middle;
+}
+.copy code { font: inherit; overflow-wrap: anywhere; }
+.copy button { flex: none; min-height: 30px; padding: 4px 10px; border: 0; border-radius: 8px; background: var(--surface); color: var(--accent-strong); font: 600 13px var(--font); }
+.preview { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; padding: 7px 10px; border-radius: 10px; background: var(--surface-2); font-size: 14px; overflow-wrap: anywhere; }
+.var { display: inline-block; padding: 1px 8px; border-radius: 6px; background: var(--btn); color: #fff; font-size: 13px; font-weight: 600; }
+.url-warn { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.done-row { display: flex; justify-content: flex-end; margin-top: 6px; }
+.tips { padding: 18px; }
+.tips h2, .faq h2 { margin: 0 0 10px; font-size: 18px; }
+.tips ul { margin: 0; padding-left: 20px; }
+.tips li { margin: 0 0 9px; }
+.faq { margin-top: 14px; padding: 8px 18px; }
+.faq details { padding: 10px 0; border-top: 1px solid var(--border); }
+.faq details:first-of-type { border-top: 0; }
+.faq summary { font-weight: 600; cursor: pointer; }
+.faq details p { margin: 8px 0 4px; color: var(--ink-2); font-size: 15px; }
+
+/* ---------- Μήνυμα ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); z-index: 50;
+  width: max-content; max-width: calc(100% - 32px); padding: 12px 16px; border-radius: 14px;
+  background: var(--ink); color: var(--page); font-size: 15px; font-weight: 500; text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .2); opacity: 0; pointer-events: none;
+  transform: translate(-50%, 16px); transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dot::after { animation: none; }
+  dialog[open] .sheet { animation: none; }
+  .meter i, .toast { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Εικονίδια -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+</svg>
+
+<div class="app" id="main">
+  <header class="top">
+    <div>
+      <p class="date" id="todayLabel"></p>
+      <h1 id="greeting">Οι ώρες μου</h1>
+    </div>
+    <button class="icon-btn" type="button" data-action="settings" aria-label="Ρυθμίσεις"><svg class="i"><use href="#i-gear"/></svg></button>
+  </header>
+
+  <div id="notices"></div>
+
+  <section id="welcome" class="card welcome" hidden>
+    <div class="art"><svg class="i"><use href="#i-clock"/></svg></div>
+    <h2>Οι ώρες σου, χωρίς να πατάς τίποτα</h2>
+    <p>Κάθε μέρα μετράει από την πρώτη φορά που το iPhone πιάνει το Wi‑Fi της δουλειάς ως την τελευταία φορά που το αφήνει.</p>
+    <ul class="features">
+      <li><svg class="i"><use href="#i-wifi"/></svg><span>Μία ρύθμιση στο iPhone, περίπου 5 λεπτά. Μετά δουλεύει μόνη της.</span></li>
+      <li><svg class="i"><use href="#i-chart"/></svg><span>Ώρες ανά μέρα, εβδομάδα και μήνα, υπερωρίες, Κυριακές και αργίες.</span></li>
+      <li><svg class="i"><use href="#i-lock"/></svg><span>Όλα μένουν στο κινητό σου. Τίποτα δεν στέλνεται πουθενά.</span></li>
+    </ul>
+    <button class="btn primary block" type="button" data-action="guide">Ξεκίνα τη ρύθμιση</button>
+    <button class="btn block" type="button" data-action="demo">Δες ένα παράδειγμα</button>
+    <button class="link" type="button" data-action="file">Έχω ήδη αρχείο ores.txt</button>
+  </section>
+
+  <div id="dash" hidden>
+    <section id="hero" class="card hero"></section>
+    <section class="kpis">
+      <div class="card tile" id="kpiWeek"></div>
+      <div class="card tile" id="kpiMonth"></div>
+    </section>
+
+    <div class="section-head">
+      <h2 id="monthTitle"></h2>
+      <div class="month-nav">
+        <button class="icon-btn sm" type="button" id="prevMonth" data-action="prev-month" aria-label="Προηγούμενος μήνας"><svg class="i"><use href="#i-left"/></svg></button>
+        <button class="icon-btn sm" type="button" id="nextMonth" data-action="next-month" aria-label="Επόμενος μήνας"><svg class="i"><use href="#i-right"/></svg></button>
+      </div>
+    </div>
+    <section class="card month-card">
+      <dl class="stats" id="monthStats"></dl>
+      <figure class="chart" id="chart">
+        <div class="plot"></div>
+        <button class="tip" id="tip" type="button" hidden></button>
+        <figcaption class="legend" id="legend"></figcaption>
+      </figure>
+    </section>
+    <div class="list-head" id="listHead" aria-hidden="true"></div>
+    <ol class="days" id="days"></ol>
+    <div class="row-actions">
+      <button class="btn" type="button" data-action="share"><svg class="i"><use href="#i-share"/></svg>Αποστολή</button>
+      <button class="btn" type="button" data-action="add-day"><svg class="i"><use href="#i-plus"/></svg>Νέα μέρα</button>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="links">
+      <button class="link" type="button" data-action="guide">Οδηγίες ρύθμισης</button>
+      <button class="link" type="button" data-action="settings">Ρυθμίσεις</button>
+    </div>
+    <div id="footInfo"></div>
+    <div class="private"><svg class="i"><use href="#i-lock"/></svg>Τα δεδομένα μένουν μόνο στο κινητό σου</div>
+  </footer>
+</div>
+
+<!-- Οδηγός ρύθμισης iPhone -->
+<div class="app guide" id="guide" hidden>
+  <button class="btn ghost back" type="button" data-action="back"><svg class="i"><use href="#i-left"/></svg>Πίσω</button>
+  <h1>Ρύθμιση στο iPhone</h1>
+  <p class="lead">Γίνεται μία φορά, σε 5 λεπτά περίπου. Μετά, κάθε φορά που το κινητό πιάνει ή αφήνει το Wi‑Fi της δουλειάς, γράφει μόνο του την ώρα σε ένα αρχείο στο iCloud. Εσύ δεν πατάς τίποτα.</p>
+  <div class="callout">
+    <p>Κάν' το <b>ενώ είσαι στη δουλειά</b>, για να φαίνεται το Wi‑Fi της στη λίστα. Χρειάζεσαι την εφαρμογή <b>Συντομεύσεις</b> της Apple, που υπάρχει ήδη στο iPhone. Αν το κινητό σου είναι στα αγγλικά, δες τα ονόματα σε παρένθεση.</p>
+    <a class="btn sm" href="shortcuts://">Άνοιγμα Συντομεύσεων</a>
+  </div>
+  <div class="progress-line"><span id="guideProgress">0 από 4 έτοιμα</span><div class="meter"><i id="guideMeter" style="width:0%"></i></div></div>
+
+  <section class="card step" id="g-in" data-step="1">
+    <div class="step-head"><span class="step-num">1</span><div><h2>Αυτοματισμός «Έφτασα»</h2><p class="why">Γράφει την ώρα όταν το κινητό συνδέεται στο Wi‑Fi της δουλειάς.</p></div></div>
+    <ol>
+      <li>Στις <b>Συντομεύσεις</b> πάτα κάτω την καρτέλα <b>Αυτοματισμός</b> <span class="en">(Automation)</span> και μετά το <b>+</b> πάνω δεξιά.</li>
+      <li>Διάλεξε <b>Wi‑Fi</b>.</li>
+      <li>Πάτα <b>Δίκτυο</b> <span class="en">(Network)</span> και διάλεξε το Wi‑Fi της δουλειάς. Αν έχει δύο δίκτυα (π.χ. ένα που τελειώνει σε «5G»), διάλεξε και τα δύο.</li>
+      <li>Άφησε τσεκαρισμένο <b>μόνο</b> το <b>Συνδέεται</b> <span class="en">(Joins)</span>.</li>
+      <li>Διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span> και κλείσε το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>. Πάτα <b>Επόμενο</b> <span class="en">(Next)</span>.</li>
+      <li>Πάτα <b>Νέος κενός αυτοματισμός</b> <span class="en">(New Blank Automation)</span> → <b>Προσθήκη ενέργειας</b> <span class="en">(Add Action)</span>. Στην αναζήτηση γράψε <b>αρχείο κειμένου</b> <span class="en">(append)</span> και διάλεξε <b>Προσάρτηση σε αρχείο κειμένου</b> <span class="en">(Append to Text File)</span>.</li>
+      <li>Πάτα στο πεδίο του κειμένου. Στη γραμμή πάνω από το πληκτρολόγιο πάτα <b>Τρέχουσα ημερομηνία</b> <span class="en">(Current Date)</span>. Θα μπει σαν μπλε κουτάκι.</li>
+      <li>Πάτα πάνω στο μπλε κουτάκι → <b>Μορφή ημερομηνίας</b> <span class="en">(Date Format)</span> → <b>Προσαρμοσμένη</b> <span class="en">(Custom)</span> και γράψε ακριβώς:<br>
+        <span class="copy"><code>yyyy-MM-dd HH:mm:ss</code><button type="button" data-copy="yyyy-MM-dd HH:mm:ss">Αντιγραφή</button></span></li>
+      <li>Γύρνα πίσω, πάτα αμέσως μετά το μπλε κουτάκι, βάλε ένα κενό και γράψε <span class="copy"><code>IN</code><button type="button" data-copy="IN">Αντιγραφή</button></span><br>
+        Πρέπει να φαίνεται έτσι: <span class="preview"><span class="var">Τρέχουσα ημερομηνία</span> IN</span></li>
+      <li>Στο αρχείο γράψε <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span> (θα μπει στον φάκελο Shortcuts του iCloud Drive). Αν υπάρχει <b>Νέα γραμμή</b> <span class="en">(Make New Line)</span>, άνοιξέ το. Πάτα <b>Τέλος</b> <span class="en">(Done)</span>.</li>
+    </ol>
+    <div class="done-row"><button class="btn sm" type="button" data-action="step:1">Έγινε</button></div>
+  </section>
+
+  <section class="card step" id="g-out" data-step="2">
+    <div class="step-head"><span class="step-num">2</span><div><h2>Αυτοματισμός «Έφυγα»</h2><p class="why">Γράφει την ώρα όταν το κινητό αφήνει το Wi‑Fi της δουλειάς.</p></div></div>
+    <p class="lead" style="font-size:15px">Φτιάξε δεύτερο αυτοματισμό ακριβώς όπως τον πρώτο, με δύο διαφορές:</p>
+    <ul>
+      <li>Στο βήμα 4 τσέκαρε <b>μόνο</b> το <b>Αποσυνδέεται</b> <span class="en">(Leaves)</span>.</li>
+      <li>Στο βήμα 9 γράψε <span class="copy"><code>OUT</code><button type="button" data-copy="OUT">Αντιγραφή</button></span> αντί για IN:<br>
+        <span class="preview"><span class="var">Τρέχουσα ημερομηνία</span> OUT</span></li>
+    </ul>
+    <div class="done-row"><button class="btn sm" type="button" data-action="step:2">Έγινε</button></div>
+  </section>
+
+  <section class="card step" id="g-short" data-step="3">
+    <div class="step-head"><span class="step-num">3</span><div><h2>Το εικονίδιο «Οι ώρες μου»</h2><p class="why">Ένα κουμπί στην αρχική οθόνη που ανοίγει αυτή την εφαρμογή με τις τελευταίες ώρες σου.</p></div></div>
+    <ol>
+      <li>Στις <b>Συντομεύσεις</b>, στην καρτέλα <b>Συντομεύσεις</b> <span class="en">(Shortcuts)</span>, πάτα το <b>+</b>.</li>
+      <li>Πρόσθεσε <b>Λήψη αρχείου από φάκελο</b> <span class="en">(Get File from Folder)</span>. Φάκελος: <b>Shortcuts</b>, αρχείο: <span class="copy"><code>ores.txt</code><button type="button" data-copy="ores.txt">Αντιγραφή</button></span><br>Άνοιξε τις επιλογές της ενέργειας και κλείσε το <b>Σφάλμα αν δεν βρεθεί</b> <span class="en">(Error If Not Found)</span>.</li>
+      <li>Πρόσθεσε <b>Κωδικοποίηση URL</b> <span class="en">(URL Encode)</span>.</li>
+      <li>Πρόσθεσε <b>Κείμενο</b> <span class="en">(Text)</span> και επικόλλησε μέσα:<br>
+        <span class="copy"><code id="shortcutUrl"></code><button type="button" id="copyUrl" data-copy="">Αντιγραφή</button></span><br>
+        Αμέσως μετά, <b>χωρίς κενό</b>, διάλεξε από τη γραμμή πάνω από το πληκτρολόγιο το μπλε κουτάκι <b>Κωδικοποιημένο κείμενο URL</b> <span class="en">(URL Encoded Text)</span>.
+        <span class="preview"><span id="urlPreview"></span><span class="var">Κωδικοποιημένο κείμενο URL</span></span>
+        <p class="url-warn" id="urlWarn" hidden>Αυτή η διεύθυνση είναι τοπική, από τον υπολογιστή. Άνοιξε αυτή τη σελίδα στο iPhone από τη διεύθυνση του ίντερνετ και θα δεις εδώ τη σωστή.</p></li>
+      <li>Πρόσθεσε <b>Άνοιγμα URL</b> <span class="en">(Open URLs)</span>.</li>
+      <li>Πάτα το όνομα πάνω πάνω → <b>Μετονομασία</b> <span class="en">(Rename)</span> → <span class="copy"><code>Οι ώρες μου</code><button type="button" data-copy="Οι ώρες μου">Αντιγραφή</button></span></li>
+      <li>Πάτα το κουμπί κοινοποίησης → <b>Προσθήκη στην οθόνη Αφετηρίας</b> <span class="en">(Add to Home Screen)</span>. Από εδώ και πέρα, άνοιγε τις ώρες σου από αυτό το εικονίδιο.</li>
+    </ol>
+    <div class="done-row"><button class="btn sm" type="button" data-action="step:3">Έγινε</button></div>
+  </section>
+
+  <section class="card step" id="g-test" data-step="4">
+    <div class="step-head"><span class="step-num">4</span><div><h2>Δοκιμή</h2><p class="why">Για να σιγουρευτείς ότι όλα δουλεύουν.</p></div></div>
+    <ol>
+      <li>Στη δουλειά, άνοιξε <b>Ρυθμίσεις → Wi‑Fi</b>, κλείσε το Wi‑Fi, περίμενε 10 δευτερόλεπτα και άνοιξέ το ξανά.</li>
+      <li>Πάτα το εικονίδιο <b>Οι ώρες μου</b>. Πρέπει να δεις τη σημερινή μέρα.</li>
+      <li>Αν κάτι δεν πάει καλά, η εφαρμογή θα σου πει τι να διορθώσεις.</li>
+      <li>Σήμερα η «άφιξη» θα είναι η ώρα της δοκιμής. Πάτα πάνω στη μέρα και βάλε τη σωστή.</li>
+    </ol>
+    <div class="done-row"><button class="btn sm" type="button" data-action="step:4">Έγινε</button></div>
+  </section>
+
+  <section class="card tips">
+    <h2>Καλό να ξέρεις</h2>
+    <ul>
+      <li>Μετράει από την <b>πρώτη</b> σύνδεση ως την <b>τελευταία</b> αποσύνδεση της μέρας. Αν βγεις για φαγητό και ξαναγυρίσεις, δεν πειράζει.</li>
+      <li>Κράτα το Wi‑Fi του κινητού ανοιχτό. Αν κλείσει το κινητό στη δουλειά, η μέρα θα έχει σημάδι και η εφαρμογή θα σου προτείνει την ώρα που φεύγεις συνήθως.</li>
+      <li>Το iPhone μπορεί να καταλάβει ότι έφυγες ένα-δυο λεπτά αργότερα.</li>
+      <li>Άνοιγε την εφαρμογή πάντα από το εικονίδιο <b>Οι ώρες μου</b>. Έτσι φέρνει τις τελευταίες ώρες.</li>
+      <li>Οι ώρες φυλάγονται στο iCloud Drive (Shortcuts → ores.txt) και οι διορθώσεις σου στο Safari. Τίποτα δεν στέλνεται πουθενά.</li>
+    </ul>
+  </section>
+
+  <section class="card faq">
+    <h2 class="sr-only">Αν κάτι δεν πάει καλά</h2>
+    <details>
+      <summary>Ζητάει να διαλέξω αρχείο, αλλά δεν υπάρχει</summary>
+      <p>Πάτα εδώ και διάλεξε <b>Αποθήκευση στα Αρχεία</b> <span class="en">(Save to Files)</span> → iCloud Drive → Shortcuts. Μετά διάλεξέ το στην ενέργεια.</p>
+      <button class="btn sm" type="button" data-action="starter">Κατέβασε κενό ores.txt</button>
+    </details>
+    <details>
+      <summary>Ο αυτοματισμός με ρωτάει πριν τρέξει</summary>
+      <p>Άνοιξέ τον από την καρτέλα Αυτοματισμός και διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span>.</p>
+    </details>
+    <details>
+      <summary>Δεν βλέπω τις σημερινές ώρες</summary>
+      <p>Άνοιξε την εφαρμογή από το εικονίδιο «Οι ώρες μου», όχι από το Safari. Αν ακόμα δεν φαίνονται, δες τον έλεγχο στις Ρυθμίσεις.</p>
+    </details>
+    <details>
+      <summary>Άλλαξα κινητό</summary>
+      <p>Με το ίδιο Apple ID, το ores.txt είναι ήδη στο iCloud. Φτιάξε ξανά τους αυτοματισμούς και το εικονίδιο και θα δεις όλες τις παλιές ώρες.</p>
+    </details>
+    <details>
+      <summary>Θέλω να δω τις ώρες στον υπολογιστή</summary>
+      <p>Άνοιξε αυτή τη σελίδα στον υπολογιστή και από τις Ρυθμίσεις πάτα «Φόρτωση αρχείου». Διάλεξε το ores.txt από το iCloud Drive.</p>
+    </details>
+  </section>
+</div>
+
+<!-- Μία μέρα -->
+<dialog id="dlgDay" aria-labelledby="dayTitle">
+  <form class="sheet" id="dayForm">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="dayTitle"></h3>
+      <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="tags" id="dayTags"></div>
+    <h4 id="dayEventsLabel">Τι κατέγραψε το iPhone</h4>
+    <div class="evs" id="dayEvents"></div>
+    <div class="suggest" id="daySuggest" hidden>
+      <p id="sugText"></p>
+      <button class="btn sm primary" type="button" id="sugBtn"></button>
+    </div>
+    <div class="grid2">
+      <label class="field">Άφιξη<input type="time" id="inStart"></label>
+      <label class="field">Αναχώρηση<input type="time" id="inEnd"></label>
+    </div>
+    <p class="calc" id="dayCalc"></p>
+    <label class="check"><input type="checkbox" id="inOff">Να μη μετράει αυτή η μέρα</label>
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="btnReset">Αυτόματες ώρες</button>
+      <button class="btn primary" type="submit">Αποθήκευση</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Νέα μέρα με το χέρι -->
+<dialog id="dlgAdd" aria-labelledby="addTitle">
+  <form class="sheet" id="addForm">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="addTitle">Νέα μέρα</h3>
+      <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted">Για μέρες που δεν είχες μαζί το κινητό ή δούλεψες αλλού.</p>
+    <div class="fields" style="margin-top:14px">
+      <label class="field">Ημερομηνία<input type="date" id="inAddDate" required></label>
+    </div>
+    <div class="sheet-actions"><button class="btn primary" type="submit">Συνέχεια</button></div>
+  </form>
+</dialog>
+
+<!-- Αποστολή -->
+<dialog id="dlgShare" aria-labelledby="shareTitle">
+  <div class="sheet">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="shareTitle">Αποστολή</h3>
+      <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="menu">
+      <button class="btn block" type="button" data-action="share-csv"><svg class="i"><use href="#i-file"/></svg><span>Αρχείο Excel<small>Όλες οι μέρες του μήνα, για λογιστή ή εργοδότη</small></span></button>
+      <button class="btn block" type="button" data-action="share-text"><svg class="i"><use href="#i-text"/></svg><span>Σύνοψη σε μήνυμα<small>Για Viber, WhatsApp, email</small></span></button>
+      <button class="btn block" type="button" data-action="copy-text"><svg class="i"><use href="#i-copy"/></svg><span>Αντιγραφή σύνοψης</span></button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Ρυθμίσεις -->
+<dialog id="dlgSettings" aria-labelledby="setTitle">
+  <div class="sheet">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="setTitle">Ρυθμίσεις</h3>
+      <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <h4>Έλεγχος ρύθμισης iPhone</h4>
+    <div class="health" id="health"></div>
+    <h4>Το ωράριό σου</h4>
+    <div class="fields">
+      <label class="field">Κανονικό ωράριο (ώρες τη μέρα)<input type="number" id="setTarget" inputmode="decimal" min="0" max="24" step="0.5"><span class="hint">Ό,τι δουλεύεις παραπάνω μετράει ως υπερωρία. Βάλε 0 για να μη μετράει.</span></label>
+      <label class="field">Απλήρωτο διάλειμμα (λεπτά τη μέρα)<input type="number" id="setBreak" inputmode="numeric" min="0" max="180" step="5"><span class="hint">Αφαιρείται από κάθε μέρα πάνω από 4 ώρες.</span></label>
+      <label class="field">Ωρομίσθιο σε € (προαιρετικό)<input type="number" id="setWage" inputmode="decimal" min="0" step="0.1" placeholder="π.χ. 7,50"><span class="hint">Για μια εκτίμηση των μικτών αποδοχών του μήνα, χωρίς προσαυξήσεις.</span></label>
+      <label class="field">Όνομα για τον χαιρετισμό<input type="text" id="setName" autocomplete="off" maxlength="30"></label>
+    </div>
+    <h4>Δεδομένα</h4>
+    <div class="menu">
+      <button class="btn block" type="button" data-action="guide"><svg class="i"><use href="#i-book"/></svg><span>Οδηγίες ρύθμισης iPhone</span></button>
+      <button class="btn block" type="button" data-action="file"><svg class="i"><use href="#i-file"/></svg><span>Φόρτωση αρχείου ores.txt<small>Αν θέλεις να το ανοίξεις χειροκίνητα</small></span></button>
+      <button class="btn block" type="button" data-action="export-all"><svg class="i"><use href="#i-share"/></svg><span>Όλες οι μέρες σε Excel</span></button>
+      <button class="btn block" type="button" data-action="demo"><svg class="i"><use href="#i-eye"/></svg><span>Δες ένα παράδειγμα</span></button>
+      <button class="btn block danger" type="button" data-action="clear"><svg class="i"><use href="#i-trash"/></svg><span>Διαγραφή από αυτή τη σελίδα</span></button>
+    </div>
+  </div>
+</dialog>
+
+<input type="file" id="file" accept=".txt,text/plain" hidden>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="ores.js"></script>
+<script>
+(() => {
+  'use strict';
+  const O = window.Ores;
+  const { HOUR, MIN } = O;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad2 = n => String(n).padStart(2, '0');
+  const MONTHS_SHORT = ['Ιαν', 'Φεβ', 'Μαρ', 'Απρ', 'Μαΐ', 'Ιουν', 'Ιουλ', 'Αυγ', 'Σεπ', 'Οκτ', 'Νοε', 'Δεκ'];
+  const WEEKDAYS_PLURAL = ['Τις Κυριακές', 'Τις Δευτέρες', 'Τις Τρίτες', 'Τις Τετάρτες', 'Τις Πέμπτες', 'Τις Παρασκευές', 'Τα Σάββατα'];
+  const icon = (id, cls = 'i') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+  const STATUS_ICON = {
+    error: '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" style="fill:var(--critical)"/><path d="M12 6.8v6.4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="#fff"/></svg>',
+    warn: '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" style="fill:var(--warn)"/><path d="M12 6.8v6.4" stroke="#241a00" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="#241a00"/></svg>',
+    info: '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" style="fill:var(--accent)"/><circle cx="12" cy="7.2" r="1.5" fill="#fff"/><path d="M12 10.8v6.4" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  };
+
+  /* ---------- Αποθήκευση: μόνο σε αυτό το κινητό ---------- */
+  const store = {
+    get(key, fallback) {
+      try {
+        const v = localStorage.getItem('ores.' + key);
+        return v == null ? fallback : JSON.parse(v);
+      } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { localStorage.setItem('ores.' + key, JSON.stringify(value)); } catch (e) { /* π.χ. ιδιωτική περιήγηση */ }
+    },
+    remove(key) {
+      try { localStorage.removeItem('ores.' + key); } catch (e) { /* τίποτα */ }
+    },
+  };
+
+  const DEFAULTS = { name: 'Πανούλη', targetHours: 8, breakMin: 0, wage: 0 };
+  const state = {
+    events: [], overrides: {}, bad: [], updatedAt: null, source: null,
+    settings: { ...DEFAULTS },
+    guide: {},
+    demo: null, // όσο δείχνουμε παράδειγμα, εδώ περιμένουν τα αληθινά δεδομένα
+    month: O.dateKey(Date.now()).slice(0, 7),
+    days: [],
+  };
+  const dismissed = new Set();
+
+  function load() {
+    state.events = O.parseLog(store.get('log', '')).events;
+    state.overrides = store.get('overrides', {}) || {};
+    state.bad = store.get('bad', []) || [];
+    state.updatedAt = store.get('updatedAt', null);
+    state.source = store.get('source', null);
+    state.settings = { ...DEFAULTS, ...(store.get('settings', {}) || {}) };
+    state.guide = store.get('guide', {}) || {};
+  }
+  function saveData() {
+    if (state.demo) return;
+    store.set('log', O.serializeEvents(state.events));
+    store.set('overrides', state.overrides);
+    store.set('bad', state.bad);
+    store.set('updatedAt', state.updatedAt);
+    store.set('source', state.source);
+  }
+  function calcOpts(now, overrides = state.overrides) {
+    return {
+      now, overrides,
+      breakMin: +state.settings.breakMin || 0,
+      targetMin: Math.round((+state.settings.targetHours || 0) * 60),
+    };
+  }
+
+  /* ---------- Είσοδος δεδομένων ---------- */
+  function importText(text, source) {
+    if (state.demo) exitDemo(false);
+    const raw = String(text || '').trim();
+    if (!raw) {
+      toast(source === 'shortcut'
+        ? 'Δεν ήρθαν ώρες από το iPhone. Το ores.txt δεν υπάρχει ακόμα ή είναι άδειο.'
+        : 'Το αρχείο είναι άδειο.');
+      return;
+    }
+    const parsed = O.parseLog(raw);
+    const before = state.events.length;
+    state.events = O.mergeEvents(state.events, parsed.events);
+    state.bad = parsed.bad.slice(0, 20);
+    state.updatedAt = Date.now();
+    state.source = source;
+    state.month = O.dateKey(Date.now()).slice(0, 7);
+    saveData();
+    const added = state.events.length - before;
+    if (!parsed.events.length) toast('Δεν βρέθηκαν ώρες στο αρχείο. Δες τι λέει ο έλεγχος πάνω πάνω.');
+    else if (source === 'shortcut') toast(added ? `Ενημερώθηκε ✓ ${added === 1 ? '1 νέα καταγραφή' : added + ' νέες καταγραφές'}` : 'Ενημερώθηκε ✓');
+    else toast(`Φορτώθηκαν ${parsed.events.length} καταγραφές ✓`);
+  }
+
+  // Η συντόμευση ανοίγει τη σελίδα με όλο το ores.txt μετά το # (δεν φεύγει ποτέ από το κινητό).
+  function readHash() {
+    const h = location.hash;
+    if (!h || h === '#') return;
+    history.replaceState(null, '', location.pathname + location.search);
+    if (/^#demo$/i.test(h)) enterDemo();
+    else if (/^#guide$/i.test(h)) showGuide();
+    else importText(O.decodeHash(h), 'shortcut');
+  }
+
+  /* ---------- Παράδειγμα ---------- */
+  function demoLog(now) {
+    let seed = 20260923;
+    const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
+    const lines = [];
+    const push = (mid, minutes, type) => {
+      const t = mid + Math.round(minutes) * MIN + Math.floor(rnd() * 60) * 1000;
+      if (t <= now) lines.push(`${O.fmtStamp(t)} ${type}`);
+    };
+    const todayKey = O.dateKey(now);
+    let flagged = false;
+    for (let i = 70; i >= 0; i--) {
+      const key = O.addDays(todayKey, -i);
+      const wd = O.keyToDate(key).getDay();
+      const mid = O.keyToDate(key).getTime();
+      const sundayShift = wd === 0 && i >= 10 && i <= 16;
+      if ((wd === 0 && !sundayShift) || O.holidayName(key)) continue;
+      if (wd === 6 && rnd() < 0.55) continue;
+      const short = wd === 6 || sundayShift;
+      const start = short ? 9 * 60 + rnd() * 25 : 7 * 60 + 48 + rnd() * 22;
+      const length = short ? 4 * 60 + 20 + rnd() * 40 : 8 * 60 - 5 + rnd() * 50 + (rnd() < 0.15 ? 55 : 0);
+      push(mid, start, 'IN');
+      if (!short && rnd() < 0.5) {
+        const out = start + 4 * 60 + 40 + rnd() * 40;
+        push(mid, out, 'OUT');
+        push(mid, out + 20 + rnd() * 15, 'IN');
+      }
+      if (!flagged && i <= 9 && i >= 4 && wd >= 1 && wd <= 5) { flagged = true; continue; } // έκλεισε το κινητό
+      push(mid, start + length, 'OUT');
+    }
+    return lines.join('\n');
+  }
+  function enterDemo() {
+    if (!state.demo) {
+      state.demo = { events: state.events, overrides: state.overrides, bad: state.bad, updatedAt: state.updatedAt, source: state.source };
+    }
+    state.events = O.parseLog(demoLog(Date.now())).events;
+    state.overrides = {};
+    state.bad = [];
+    state.updatedAt = Date.now();
+    state.source = 'demo';
+    state.month = O.dateKey(Date.now()).slice(0, 7);
+    closeDialogs();
+    hideGuide();
+    render();
+  }
+  function exitDemo(doRender = true) {
+    if (!state.demo) return;
+    Object.assign(state, state.demo);
+    state.demo = null;
+    state.month = O.dateKey(Date.now()).slice(0, 7);
+    if (doRender) render();
+  }
+
+  /* ---------- Μορφοποίηση ---------- */
+  function durHTML(min) {
+    const a = Math.max(0, Math.round(min || 0));
+    const h = Math.floor(a / 60);
+    return h ? `${h}<span class="u">ω</span>${pad2(a % 60)}<span class="u">λ</span>` : `${a % 60}<span class="u">λ</span>`;
+  }
+  const daysWord = n => (n === 1 ? '1 μέρα' : `${n} μέρες`);
+  const shortDate = key => { const d = O.keyToDate(key); return `${d.getDate()}/${d.getMonth() + 1}`; };
+  const dayName = key => { const d = O.keyToDate(key); return `${O.WEEKDAYS[d.getDay()]} ${d.getDate()} ${O.MONTHS_GEN[d.getMonth()]}`; };
+  const hoursNum = min => { const h = min / 60; return Number.isInteger(h) ? String(h) : h.toFixed(1).replace('.', ','); };
+  const hoursWord = min => `${hoursNum(min)}ωρο`; // «8ωρο»
+  const hoursShort = min => `${hoursNum(min)}ω`; // «8ω»
+  const eur = v => new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v);
+  function relTime(ms, now) {
+    const k = O.dateKey(ms);
+    const today = O.dateKey(now);
+    const clock = O.fmtClock(ms);
+    if (k === today) return `σήμερα ${clock}`;
+    if (k === O.addDays(today, -1)) return `χθες ${clock}`;
+    const d = new Date(ms);
+    return `${O.WEEKDAYS_SHORT[d.getDay()]} ${d.getDate()}/${d.getMonth() + 1} ${clock}`;
+  }
+  // «08:02 → 16:10». Όταν λείπει η αναχώρηση δείχνουμε παύλα· οι λεπτομέρειες στη σημείωση.
+  function timesText(d) {
+    const s = d.start != null ? O.fmtClock(d.start) : '—';
+    const e = d.status === 'open' ? 'τώρα' : d.status === 'no-end' || d.end == null ? '—' : O.fmtEnd(d);
+    return `${s} → ${e}`;
+  }
+  function statusText(d) {
+    if (d.status === 'open') return 'Στη δουλειά τώρα';
+    if (d.status === 'no-end') return d.partial ? `Λείπει η αναχώρηση · μετράει ως τις ${O.fmtClock(d.end)}` : 'Λείπει η ώρα αναχώρησης';
+    if (d.status === 'no-start') return 'Λείπει η ώρα άφιξης';
+    if (d.status === 'off') return 'Δεν μετράει';
+    return '';
+  }
+  const specialText = d => (d.holiday ? `Αργία · ${d.holiday}` : d.sunday ? 'Κυριακή' : '');
+
+  /* ---------- Σχεδίαση ---------- */
+  function render() {
+    const now = Date.now();
+    state.days = O.buildDays(state.events, calcOpts(now));
+    state.renderedDay = O.dateKey(now);
+    const has = state.days.length > 0;
+    const keepTip = tipKey; // το συννεφάκι μένει ανοιχτό όταν ανανεώνεται η οθόνη
+    hideTip();
+    renderHeader(now);
+    renderNotices(now);
+    $('#welcome').hidden = has;
+    $('#dash').hidden = !has;
+    if (has) {
+      renderHero(now);
+      renderKpis(now);
+      renderMonth(now);
+      const slot = keepTip && document.querySelector(`#chart .slot[data-key="${keepTip}"]`);
+      if (slot) showTip(slot);
+    }
+    renderFoot(now);
+  }
+
+  function renderHeader(now) {
+    const d = new Date(now);
+    const h = d.getHours();
+    const hello = h >= 5 && h < 12 ? 'Καλημέρα' : h >= 12 && h < 17 ? 'Γεια σου' : 'Καλησπέρα';
+    const name = String(state.settings.name || '').trim();
+    $('#greeting').textContent = name ? `${hello}, ${name}` : hello;
+    $('#todayLabel').textContent = dayName(O.dateKey(now));
+  }
+
+  function noticeHTML(level, title, text, actions = []) {
+    const links = actions.length
+      ? `<div class="links">${actions.map(([a, label]) => `<button type="button" class="link" data-action="${esc(a)}">${esc(label)}</button>`).join('')}</div>`
+      : '';
+    return `<div class="notice ${level === 'info' ? 'info' : ''}">${STATUS_ICON[level]}<div><h3>${esc(title)}</h3><p>${esc(text)}</p>${links}</div></div>`;
+  }
+  function issueHTML(i) {
+    const actions = [[`guide:${i.fix}`, 'Δες τις οδηγίες']];
+    if (i.level === 'info') actions.push([`dismiss:${i.id}`, 'Εντάξει']);
+    return noticeHTML(i.level, i.title, i.text, actions);
+  }
+  function renderNotices(now) {
+    const parts = [];
+    if (state.demo) {
+      parts.push(noticeHTML('info', 'Αυτό είναι παράδειγμα', 'Οι ώρες είναι φανταστικές, για να δεις πώς θα φαίνεται η εφαρμογή.', [['exit-demo', 'Κλείσιμο παραδείγματος']]));
+    } else {
+      const issues = O.diagnose({ events: state.events, days: state.days, bad: state.bad, now }).filter(i => !dismissed.has(i.id));
+      issues.slice(0, 2).forEach(i => parts.push(issueHTML(i)));
+      if (state.events.length && state.updatedAt && now - state.updatedAt > 12 * HOUR) {
+        parts.push(noticeHTML('info', `Οι ώρες είναι από ${relTime(state.updatedAt, now)}`, 'Για τις τελευταίες, άνοιξε την εφαρμογή από το εικονίδιο «Οι ώρες μου».'));
+      }
+    }
+    const html = parts.join('');
+    const box = $('#notices');
+    if (box.innerHTML !== html) box.innerHTML = html;
+  }
+
+  function meterHTML(day, target, live) {
+    if (!target || day.minutes == null) return '';
+    const pct = Math.min(100, (day.minutes / target) * 100);
+    let left;
+    let right = '';
+    if (day.minutes >= target) {
+      left = `Συμπλήρωσες το ${hoursWord(target)}`;
+      if (day.overtime) right = `<b class="num">+${O.fmtDur(day.overtime)}</b> υπερωρία`;
+    } else if (live) {
+      const breakMin = +state.settings.breakMin || 0;
+      const needRaw = target + (breakMin && target + breakMin > O.BREAK_AFTER_MIN ? breakMin : 0);
+      left = `Συμπληρώνεις ${hoursWord(target)} στις <b class="num">${O.fmtClock(day.start + needRaw * MIN)}</b>`;
+      right = `<span class="num">${O.fmtDur(target - day.minutes)}</span> ακόμα`;
+    } else {
+      left = `Ωράριο ${hoursShort(target)}`;
+      right = `<span class="num">${O.fmtDur(target - day.minutes)}</span> λιγότερο`;
+    }
+    return `<div class="meter" role="img" aria-label="${Math.round(pct)}% του ωραρίου"><i style="width:${pct.toFixed(1)}%"></i></div><div class="meter-meta"><span>${left}</span><span>${right}</span></div>`;
+  }
+
+  function renderHero(now) {
+    const todayKey = O.dateKey(now);
+    const open = state.days.find(d => d.status === 'open');
+    const today = open || state.days.find(d => d.key === todayKey);
+    const target = calcOpts(now).targetMin;
+    const el = $('#hero');
+    let html;
+    if (open) {
+      const since = O.fmtClock(open.start) + (open.key !== todayKey ? ' (χθες)' : '');
+      html = `<div class="hero-top"><span class="live"><span class="dot"></span>Στη δουλειά τώρα</span><span class="right num">από ${since}</span></div>`
+        + `<div class="big">${durHTML(open.minutes)}</div>${meterHTML(open, target, true)}`;
+    } else if (today) {
+      html = `<div class="hero-top"><span>Σήμερα${today.holiday || today.sunday ? ` · ${esc(specialText(today))}` : ''}</span><span class="right num">${esc(timesText(today))}</span></div>`;
+      if (today.status === 'off') {
+        html += '<div class="big quiet">Δεν μετράει</div>';
+      } else if (today.minutes != null) {
+        html += `<div class="big">${durHTML(today.minutes)}</div>${meterHTML(today, target, false)}`;
+        if (today.status === 'no-end') html += `<p class="warnline">${STATUS_ICON.warn}Λείπει η ώρα που έφυγες. Πάτα εδώ για να τη βάλεις.</p>`;
+      } else {
+        html += `<div class="big quiet">${esc(statusText(today))}</div><p class="hero-sub">Πάτα εδώ για να τη συμπληρώσεις.</p>`;
+      }
+    } else {
+      const last = [...state.days].reverse().find(d => d.minutes != null && d.status !== 'off' && d.key < todayKey);
+      html = '<div class="hero-top"><span>Σήμερα</span></div><div class="big quiet">Δεν έχεις πάει ακόμα στη δουλειά</div>'
+        + (last
+          ? `<p class="hero-sub">Τελευταία φορά ${esc(O.WEEKDAYS[O.keyToDate(last.key).getDay()])} ${shortDate(last.key)}: <b class="num">${O.fmtDur(last.minutes)}</b> <span class="num">(${esc(timesText(last))})</span></p>`
+          : '<p class="hero-sub">Μόλις το κινητό πιάσει το Wi‑Fi της δουλειάς, αρχίζει το μέτρημα.</p>');
+    }
+    el.innerHTML = html;
+    if (today) {
+      el.dataset.action = `day:${today.key}`;
+      el.setAttribute('role', 'button');
+      el.tabIndex = 0;
+    } else {
+      delete el.dataset.action;
+      el.removeAttribute('role');
+      el.removeAttribute('tabindex');
+    }
+  }
+
+  function tileHTML(label, sum) {
+    const extra = sum.overtime ? ` · +${O.fmtDur(sum.overtime)} υπερωρίες` : sum.days ? ` · μ.ό. ${O.fmtDur(sum.average)}` : '';
+    return `<div class="k">${esc(label)}</div><div class="v">${durHTML(sum.minutes)}</div><div class="s">${daysWord(sum.days)}${extra}</div>`;
+  }
+  function renderKpis(now) {
+    const todayKey = O.dateKey(now);
+    const [ws, we] = O.weekRange(todayKey);
+    const ym = todayKey.slice(0, 7);
+    $('#kpiWeek').innerHTML = tileHTML('Αυτή την εβδομάδα', O.summarize(state.days, ws, we));
+    $('#kpiMonth').innerHTML = tileHTML(O.MONTHS_NOM[+ym.slice(5) - 1], O.summarize(state.days, ym + '-01', ym + '-31'));
+  }
+
+  function monthDays(ym) { return state.days.filter(d => d.key.slice(0, 7) === ym); }
+
+  function renderMonth(now) {
+    const ym = state.month;
+    const [y, m] = ym.split('-').map(Number);
+    const list = monthDays(ym);
+    const sum = O.summarize(list, ym + '-01', ym + '-31');
+    const target = calcOpts(now).targetMin;
+    $('#monthTitle').innerHTML = `${O.MONTHS_NOM[m - 1]} ${y}<span class="sub num">${sum.days ? `${O.fmtDur(sum.minutes)} σε ${daysWord(sum.days)}` : 'Καμία μέρα'}</span>`;
+    const firstYm = state.days.length ? state.days[0].key.slice(0, 7) : ym;
+    const nowYm = O.dateKey(now).slice(0, 7);
+    $('#prevMonth').disabled = ym <= firstYm;
+    $('#nextMonth').disabled = ym >= nowYm;
+
+    const stats = [['Μέσος όρος', sum.days ? O.fmtDur(sum.average) : '—']];
+    if (target) stats.push(['Υπερωρίες', sum.overtime ? '+' + O.fmtDur(sum.overtime) : '—']);
+    stats.push(['Κυριακές & αργίες', sum.specialDays ? `${O.fmtDur(sum.special)} (${daysWord(sum.specialDays)})` : '—']);
+    const wage = +state.settings.wage || 0;
+    if (wage) stats.push(['Αποδοχές περίπου', sum.minutes ? eur((sum.minutes / 60) * wage) : '—']);
+    $('#monthStats').innerHTML = stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd class="num">${esc(v)}</dd></div>`).join('');
+
+    renderChart(list, y, m, target, sum);
+    renderDayList(list, now);
+  }
+
+  /* Διάγραμμα: μία στήλη για κάθε μέρα του μήνα, με γραμμή στο ωράριο. */
+  function barPath(x, y, w, h) {
+    const r = Math.min(4, w / 2, h);
+    return `M${x},${y + h}V${y + r}A${r},${r} 0 0 1 ${x + r},${y}H${x + w - r}A${r},${r} 0 0 1 ${x + w},${y + r}V${y + h}Z`;
+  }
+  function renderChart(list, y, m, target, sum) {
+    const fig = $('#chart');
+    const W = Math.max(260, Math.floor(fig.clientWidth || 320));
+    const nDays = new Date(y, m, 0).getDate();
+    const byKey = new Map(list.map(d => [d.key, d]));
+    const maxMin = Math.max(target, 60, ...list.map(d => (d.status === 'off' ? 0 : d.minutes || 0)));
+    const stepH = maxMin <= 6 * 60 ? 2 : maxMin <= 14 * 60 ? 4 : 6;
+    const topH = Math.max(stepH, Math.ceil(maxMin / 60 / stepH) * stepH);
+    const padL = 30;
+    const padR = 6;
+    const padT = 10;
+    const plotH = 130;
+    const H = padT + plotH + 22;
+    const slot = (W - padL - padR) / nDays;
+    const barW = Math.max(3, Math.min(24, slot - 3));
+    const yOf = min => padT + plotH - (min / 60 / topH) * plotH;
+    const base = padT + plotH;
+    let flagged = false;
+    let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="group" aria-label="Ώρες ανά μέρα, ${esc(O.MONTHS_NOM[m - 1])} ${y}: σύνολο ${O.fmtDur(sum.minutes)}. Κάθε μέρα αναλυτικά στη λίστα από κάτω.">`;
+    for (let h = 0; h <= topH; h += stepH) {
+      const yy = Math.round(yOf(h * 60)) + 0.5;
+      svg += `<line class="${h ? 'grid' : 'base'}" x1="${padL}" x2="${W - padR}" y1="${yy}" y2="${yy}"/>`;
+      svg += `<text class="tick" x="${padL - 7}" y="${yy + 4}" text-anchor="end">${h}ω</text>`;
+    }
+    for (let i = 1; i <= nDays; i++) {
+      const key = `${y}-${pad2(m)}-${pad2(i)}`;
+      const d = byKey.get(key);
+      const x0 = padL + slot * (i - 1);
+      const cx = x0 + slot / 2;
+      let top = base;
+      let marks = '';
+      if (d && d.minutes != null && d.status !== 'off') {
+        top = yOf(d.minutes);
+        const cls = d.status === 'open' ? 'open' : d.status === 'no-end' ? 'partial' : '';
+        marks += `<path class="bar ${cls}" d="${barPath(cx - barW / 2, top, barW, base - top)}"/>`;
+      }
+      if (d && (d.status === 'no-end' || d.status === 'no-start')) {
+        flagged = true;
+        top = Math.min(top, base) - 8;
+        marks += `<circle class="flag" cx="${cx}" cy="${top}" r="4"/>`;
+      }
+      if (d) {
+        const label = `${dayName(key)}: ${d.minutes != null && d.status !== 'off' ? O.fmtDur(d.minutes) : statusText(d) || '—'}`;
+        svg += `<g class="slot" data-key="${key}" data-x="${cx}" data-top="${top}"><rect class="hl" x="${x0 + 0.5}" y="${padT}" width="${Math.max(1, slot - 1)}" height="${plotH}" rx="4"/>${marks}<rect class="hit" x="${x0}" y="0" width="${slot}" height="${H}" tabindex="0" role="button" aria-label="${esc(label)}"/></g>`;
+      }
+      if (i === 1 || i % 5 === 0) svg += `<text class="tick" x="${cx}" y="${base + 16}" text-anchor="middle">${i}</text>`;
+    }
+    if (target && target / 60 <= topH) {
+      const yy = Math.round(yOf(target)) + 0.5;
+      svg += `<line class="target" x1="${padL}" x2="${W - padR}" y1="${yy}" y2="${yy}"/>`;
+    }
+    svg += '</svg>';
+    fig.querySelector('.plot').innerHTML = svg;
+    const legend = [];
+    if (target) legend.push(`<span><i class="lk-line"></i>ωράριο ${esc(hoursShort(target))}</span>`);
+    if (flagged) legend.push('<span><i class="lk-dot"></i>λείπει μια ώρα</span>');
+    $('#legend').innerHTML = legend.join('');
+    $('#legend').hidden = !legend.length;
+  }
+
+  let tipKey = null;
+  function showTip(slot) {
+    const key = slot.dataset.key;
+    const d = state.days.find(x => x.key === key);
+    if (!d) return hideTip();
+    document.querySelectorAll('#chart .slot.on').forEach(s => s.classList.remove('on'));
+    slot.classList.add('on');
+    const tip = $('#tip');
+    const note = [specialText(d), statusText(d)].filter(Boolean).join(' · ');
+    tip.innerHTML = `<b class="num">${d.minutes != null && d.status !== 'off' ? O.fmtDur(d.minutes) : '—'}</b>`
+      + `<span>${esc(O.WEEKDAYS_SHORT[O.keyToDate(key).getDay()])} ${shortDate(key)} · <span class="num">${esc(timesText(d))}</span></span>`
+      + (note ? `<span class="k">${esc(note)}</span>` : '')
+      + '<span class="more">Άνοιγμα ›</span>';
+    tip.dataset.action = `day:${key}`;
+    tip.hidden = false;
+    const figW = $('#chart').clientWidth;
+    const half = tip.offsetWidth / 2;
+    const x = Math.min(Math.max(+slot.dataset.x, half), figW - half);
+    tip.style.left = `${x}px`;
+    tip.style.top = `${Math.max(+slot.dataset.top, tip.offsetHeight + 12)}px`;
+    tipKey = key;
+  }
+  function hideTip() {
+    const tip = $('#tip');
+    if (tip) tip.hidden = true;
+    document.querySelectorAll('#chart .slot.on').forEach(s => s.classList.remove('on'));
+    tipKey = null;
+  }
+
+  function renderDayList(list, now) {
+    const box = $('#days');
+    const head = $('#listHead');
+    if (!list.length) {
+      head.hidden = true;
+      box.innerHTML = '<li class="empty-month">Καμία καταγραφή αυτόν τον μήνα.</li>';
+      return;
+    }
+    // Κοινή κλίμακα ωρών για όλες τις γραμμές, ώστε να συγκρίνονται με μια ματιά.
+    let lo = Infinity;
+    let hi = -Infinity;
+    for (const d of list) {
+      const mid = O.keyToDate(d.key).getTime();
+      for (const t of [d.start, d.status === 'open' ? now : d.end]) {
+        if (t == null) continue;
+        lo = Math.min(lo, (t - mid) / HOUR);
+        hi = Math.max(hi, (t - mid) / HOUR);
+      }
+    }
+    if (lo > hi) { lo = 8; hi = 16; }
+    lo = Math.max(0, Math.floor((lo - 0.25) / 3) * 3);
+    hi = Math.min(36, Math.max(lo + 6, Math.ceil((hi + 0.25) / 3) * 3));
+    const step = hi - lo <= 12 ? 3 : 6;
+    let marks = '';
+    for (let h = lo; h <= hi; h += step) {
+      const at = ((h - lo) / (hi - lo)) * 100;
+      const shift = at === 0 ? '0' : at === 100 ? '-100%' : '-50%';
+      marks += `<span style="left:${at}%;transform:translateX(${shift})">${pad2(h % 24)}</span>`;
+    }
+    head.innerHTML = `<span></span><span class="scale">${marks}</span><span class="r">Ώρες</span>`;
+    head.hidden = false;
+
+    const todayKey = O.dateKey(now);
+    let html = '';
+    let week = null;
+    for (const d of [...list].reverse()) {
+      const [ws, we] = O.weekRange(d.key);
+      if (ws !== week) {
+        week = ws;
+        const wsum = O.summarize(state.days, ws, we);
+        const a = O.keyToDate(ws);
+        const b = O.keyToDate(we);
+        const range = a.getMonth() === b.getMonth()
+          ? `${a.getDate()}–${b.getDate()} ${MONTHS_SHORT[b.getMonth()]}`
+          : `${a.getDate()} ${MONTHS_SHORT[a.getMonth()]} – ${b.getDate()} ${MONTHS_SHORT[b.getMonth()]}`;
+        html += `<li class="week-h"><span>Εβδομάδα ${range}</span><span class="num">${O.fmtDur(wsum.minutes)}</span></li>`;
+      }
+      html += `<li>${dayRowHTML(d, lo, hi, todayKey, now)}</li>`;
+    }
+    box.innerHTML = html;
+  }
+
+  function dayRowHTML(d, lo, hi, todayKey, now) {
+    const date = O.keyToDate(d.key);
+    const mid = date.getTime();
+    const pos = t => Math.min(100, Math.max(0, (((t - mid) / HOUR - lo) / (hi - lo)) * 100));
+    const end = d.status === 'open' ? now : d.end;
+    let bar = '';
+    if (d.start != null && end != null && end > d.start && d.status !== 'off') {
+      const cls = d.status === 'open' ? 'open' : d.status === 'no-end' ? 'partial' : '';
+      bar = `<i class="${cls}" style="left:${pos(d.start).toFixed(2)}%;width:${(pos(end) - pos(d.start)).toFixed(2)}%"></i>`;
+    }
+    const notes = [];
+    if (d.status === 'open') notes.push(`<span class="it"><span class="dot sm"></span>${esc(statusText(d))}</span>`);
+    else if (d.status === 'no-end' || d.status === 'no-start') notes.push(`<span class="it">${STATUS_ICON.warn.replace('class="ic"', 'class="ic sm"')}${esc(statusText(d))}</span>`);
+    else if (d.status === 'off') notes.push(`<span class="it">${esc(statusText(d))}</span>`);
+    if (d.edited && d.status !== 'off') notes.push(`<span class="it">${icon('pencil')}Διορθωμένη</span>`);
+    if (specialText(d)) notes.push(`<span class="tag">${esc(specialText(d))}</span>`);
+    const cls = ['day', d.key === todayKey ? 'today' : '', d.status === 'off' ? 'off' : ''].filter(Boolean).join(' ');
+    return `<button type="button" class="${cls}" data-action="day:${d.key}">`
+      + `<span class="d-date"><b>${date.getDate()}</b><small>${O.WEEKDAYS_SHORT[date.getDay()]}</small></span>`
+      + `<span class="d-mid"><span class="d-times num">${esc(timesText(d))}</span><span class="d-track">${bar}</span>${notes.length ? `<span class="d-note">${notes.join('')}</span>` : ''}</span>`
+      + `<span class="d-right"><span class="d-dur num">${d.minutes != null ? O.fmtDur(d.minutes) : '—'}</span>${d.overtime && d.status !== 'off' ? `<span class="d-ot num">+${O.fmtDur(d.overtime)}</span>` : ''}</span>`
+      + '</button>';
+  }
+
+  function renderFoot(now) {
+    const parts = [];
+    if (state.demo) parts.push('Παράδειγμα με φανταστικές ώρες.');
+    else if (state.updatedAt) {
+      parts.push(`Ενημέρωση ${state.source === 'file' ? 'από αρχείο' : 'από το iPhone'}: ${relTime(state.updatedAt, now)}`);
+      const last = state.events[state.events.length - 1];
+      if (last) parts.push(`Τελευταία καταγραφή: ${last.type === 'in' ? 'σύνδεση' : 'αποσύνδεση'}, ${relTime(last.t, now)}`);
+    }
+    $('#footInfo').innerHTML = parts.map(esc).join('<br>');
+  }
+
+  /* ---------- Μία μέρα: προβολή και διόρθωση ---------- */
+  function openDay(key) {
+    hideTip();
+    const now = Date.now();
+    const cur = state.days.find(d => d.key === key) || null;
+    const base = O.buildDays(state.events, calcOpts(now, {})).find(d => d.key === key) || null;
+    const dlg = $('#dlgDay');
+    dlg.dataset.key = key;
+    $('#dayTitle').textContent = dayName(key);
+    const tags = [];
+    if (cur && specialText(cur)) tags.push(specialText(cur));
+    else if (!cur && O.holidayName(key)) tags.push(`Αργία · ${O.holidayName(key)}`);
+    if (state.overrides[key]) tags.push('Διορθωμένη με το χέρι');
+    $('#dayTags').innerHTML = tags.map(t => `<span class="tag">${esc(t)}</span>`).join('');
+    const evs = base ? base.events : [];
+    $('#dayEvents').innerHTML = evs.length
+      ? evs.map(e => `<span class="ev ${e.type}"><i></i><b class="num">${O.fmtClock(e.t)}${O.dateKey(e.t) !== key ? ' (+1)' : ''}</b>${e.type === 'in' ? 'σύνδεση' : 'αποσύνδεση'}</span>`).join('')
+      : '<span class="muted">Καμία αυτόματη καταγραφή αυτή τη μέρα. Συμπλήρωσε τις ώρες με το χέρι.</span>';
+
+    $('#inStart').value = cur && cur.start != null ? O.fmtClock(cur.start) : '';
+    $('#inEnd').value = cur && cur.status === 'ok' && cur.end != null ? O.fmtClock(cur.end) : '';
+    $('#inOff').checked = !!(cur && cur.status === 'off');
+    $('#btnReset').hidden = !state.overrides[key];
+
+    const sug = cur && O.suggestFix(cur, O.typicalTimes(state.days, key));
+    const box = $('#daySuggest');
+    box.hidden = !sug;
+    if (sug) {
+      const typical = O.typicalTimes(state.days, key);
+      const when = typical.sameWeekday ? WEEKDAYS_PLURAL[O.keyToDate(key).getDay()] : 'Συνήθως';
+      $('#sugText').innerHTML = sug.field === 'end'
+        ? `Δεν γράφτηκε πότε έφυγες. ${esc(when)} φεύγεις γύρω στις <b class="num">${sug.time}</b>.`
+        : `Δεν γράφτηκε πότε ήρθες. ${esc(when)} έρχεσαι γύρω στις <b class="num">${sug.time}</b>.`;
+      const btn = $('#sugBtn');
+      btn.textContent = `Βάλε ${sug.time}`;
+      btn.dataset.field = sug.field;
+      btn.dataset.time = sug.time;
+    }
+    updateDayCalc();
+    dlg.showModal();
+  }
+
+  // Κρατάμε ως διόρθωση μόνο ό,τι διαφέρει από αυτά που κατέγραψε το iPhone.
+  function formOverride(key) {
+    const base = O.buildDays(state.events, calcOpts(Date.now(), {})).find(d => d.key === key) || null;
+    const s = $('#inStart').value;
+    const e = $('#inEnd').value;
+    const logStart = base && base.start != null ? O.fmtClock(base.start) : '';
+    const logEnd = base && (base.status === 'ok' || base.status === 'no-start') && base.end != null ? O.fmtClock(base.end) : '';
+    const ov = {};
+    if (s && s !== logStart) ov.start = s;
+    if (e && e !== logEnd) ov.end = e;
+    if ($('#inOff').checked) ov.off = true;
+    return Object.keys(ov).length ? ov : null;
+  }
+  function updateDayCalc() {
+    const key = $('#dlgDay').dataset.key;
+    const ov = formOverride(key);
+    const overrides = { ...state.overrides };
+    if (ov) overrides[key] = ov; else delete overrides[key];
+    const d = O.buildDays(state.events, calcOpts(Date.now(), overrides)).find(x => x.key === key);
+    const s = $('#inStart').value;
+    const e = $('#inEnd').value;
+    let text;
+    if (!d || d.status === 'off') text = d ? 'Αυτή η μέρα δεν θα μετράει στα σύνολα.' : 'Συμπλήρωσε άφιξη και αναχώρηση.';
+    else if (d.minutes == null) text = d.status === 'no-start' ? 'Λείπει η ώρα άφιξης.' : 'Λείπει η ώρα αναχώρησης.';
+    else {
+      text = `Σύνολο: <b class="num">${O.fmtDur(d.minutes)}</b>`;
+      if (d.status === 'open') text += ' μέχρι τώρα';
+      if (d.breakApplied) text += ` <span class="num">(−${d.breakApplied}′ διάλειμμα)</span>`;
+      if (s && e && e <= s) text += ' · η αναχώρηση είναι την επόμενη μέρα';
+      if (d.status === 'no-end') text += ' · λείπει η αναχώρηση';
+    }
+    $('#dayCalc').innerHTML = text;
+  }
+  function saveDay() {
+    const key = $('#dlgDay').dataset.key;
+    const ov = formOverride(key);
+    if (ov) state.overrides[key] = ov; else delete state.overrides[key];
+    saveData();
+    state.month = key.slice(0, 7);
+    $('#dlgDay').close();
+    render();
+    toast('Αποθηκεύτηκε ✓');
+  }
+
+  /* ---------- Ρυθμίσεις ---------- */
+  function renderHealth() {
+    const now = Date.now();
+    const box = $('#health');
+    if (state.demo) { box.innerHTML = '<div class="ok-line">Τώρα βλέπεις παράδειγμα. Κλείσ\' το για να δεις τον έλεγχο των δικών σου δεδομένων.</div>'; return; }
+    if (!state.events.length && !state.bad.length) {
+      box.innerHTML = '<div class="ok-line">Δεν έχουν έρθει ακόμα ώρες από το iPhone. Κάνε τη ρύθμιση και μετά άνοιξε την εφαρμογή από το εικονίδιο «Οι ώρες μου».</div>';
+      return;
+    }
+    const issues = O.diagnose({ events: state.events, days: state.days, bad: state.bad, now });
+    if (issues.length) { box.innerHTML = issues.map(issueHTML).join(''); return; }
+    const last = state.events[state.events.length - 1];
+    box.innerHTML = `<div class="ok-line">${icon('check')}<span>Όλα δουλεύουν. ${state.events.length} καταγραφές από ${esc(dayName(O.dateKey(state.events[0].t)))}. Τελευταία: ${last.type === 'in' ? 'σύνδεση' : 'αποσύνδεση'}, ${esc(relTime(last.t, now))}.</span></div>`;
+  }
+  function openSettings() {
+    const s = state.settings;
+    $('#setTarget').value = s.targetHours;
+    $('#setBreak').value = s.breakMin;
+    $('#setWage').value = s.wage || '';
+    $('#setName').value = s.name;
+    renderHealth();
+    $('#dlgSettings').showModal();
+  }
+  function readSettings() {
+    const num = (v, min, max) => {
+      const n = parseFloat(String(v).replace(',', '.'));
+      return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : 0;
+    };
+    state.settings = {
+      targetHours: num($('#setTarget').value, 0, 24),
+      breakMin: Math.round(num($('#setBreak').value, 0, 180)),
+      wage: num($('#setWage').value, 0, 1000),
+      name: $('#setName').value.trim(),
+    };
+    store.set('settings', state.settings);
+    render();
+  }
+
+  /* ---------- Αποστολή, αρχεία, πρόχειρο ---------- */
+  async function deliverFile(name, content, type) {
+    const blob = new Blob([content], { type });
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (touch && navigator.canShare) {
+      try {
+        const file = new File([blob], name, { type });
+        if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+      return ok;
+    }
+  }
+  function monthText(ym) {
+    const [y, m] = ym.split('-').map(Number);
+    const list = monthDays(ym);
+    const sum = O.summarize(list, ym + '-01', ym + '-31');
+    const lines = [`Ώρες δουλειάς — ${O.MONTHS_NOM[m - 1]} ${y}`, '', `Σύνολο: ${O.fmtDur(sum.minutes)} σε ${daysWord(sum.days)}`];
+    if (sum.days) lines.push(`Μέσος όρος: ${O.fmtDur(sum.average)} τη μέρα`);
+    if (sum.overtime) lines.push(`Υπερωρίες: ${O.fmtDur(sum.overtime)}`);
+    if (sum.specialDays) lines.push(`Κυριακές & αργίες: ${daysWord(sum.specialDays)} (${O.fmtDur(sum.special)})`);
+    lines.push('');
+    for (const d of list) {
+      const date = O.keyToDate(d.key);
+      const dur = d.minutes != null && d.status !== 'off' ? O.fmtDur(d.minutes) : '—';
+      const note = [specialText(d), d.status !== 'ok' ? statusText(d) : ''].filter(Boolean).join(', ');
+      lines.push(`${O.WEEKDAYS_SHORT[date.getDay()]} ${shortDate(d.key)}  ${timesText(d)}  ${dur}${note ? `  (${note})` : ''}`);
+    }
+    return lines.join('\n');
+  }
+  async function shareText(text) {
+    if (navigator.share) {
+      try { await navigator.share({ text }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    toast((await copyText(text)) ? 'Η σύνοψη αντιγράφηκε ✓' : 'Δεν μπόρεσα να την αντιγράψω.');
+  }
+
+  /* ---------- Οδηγός ---------- */
+  function renderGuide() {
+    const url = location.origin + location.pathname + '#log=';
+    $('#shortcutUrl').textContent = url;
+    $('#copyUrl').dataset.copy = url;
+    $('#urlPreview').textContent = url;
+    $('#urlWarn').hidden = !(location.protocol === 'file:' || /^(localhost|127\.|\[::1\]|192\.168\.|10\.)/.test(location.hostname));
+    let done = 0;
+    document.querySelectorAll('.step[data-step]').forEach(sec => {
+      const n = sec.dataset.step;
+      const isDone = !!state.guide[n];
+      if (isDone) done++;
+      sec.classList.toggle('done', isDone);
+      sec.querySelector('.step-num').textContent = isDone ? '✓' : n;
+      const btn = sec.querySelector('[data-action^="step:"]');
+      btn.textContent = isDone ? 'Έγινε ✓' : 'Έγινε';
+      btn.classList.toggle('primary', !isDone);
+    });
+    $('#guideProgress').textContent = `${done} από 4 έτοιμα`;
+    $('#guideMeter').style.width = `${(done / 4) * 100}%`;
+  }
+  function showGuide(section) {
+    closeDialogs();
+    renderGuide();
+    $('#main').hidden = true;
+    $('#guide').hidden = false;
+    const target = section && document.getElementById(`g-${section === 'format' ? 'in' : section}`);
+    if (target) target.scrollIntoView({ block: 'start' }); else window.scrollTo(0, 0);
+  }
+  function hideGuide() {
+    if ($('#guide').hidden) return;
+    $('#guide').hidden = true;
+    $('#main').hidden = false;
+    window.scrollTo(0, 0);
+    render();
+  }
+
+  /* ---------- Γενικά ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3600);
+  }
+  function closeDialogs() { document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
+
+  const actions = {
+    settings: () => openSettings(),
+    guide: arg => showGuide(arg),
+    back: () => hideGuide(),
+    demo: () => enterDemo(),
+    'exit-demo': () => exitDemo(),
+    file: () => $('#file').click(),
+    dismiss: id => { dismissed.add(id); render(); },
+    'prev-month': () => { const [y, m] = state.month.split('-').map(Number); state.month = O.dateKey(new Date(y, m - 2, 1).getTime()).slice(0, 7); render(); },
+    'next-month': () => { const [y, m] = state.month.split('-').map(Number); state.month = O.dateKey(new Date(y, m, 1).getTime()).slice(0, 7); render(); },
+    day: key => openDay(key),
+    'add-day': () => {
+      const today = O.dateKey(Date.now());
+      $('#inAddDate').value = today;
+      $('#inAddDate').max = today;
+      $('#dlgAdd').showModal();
+    },
+    share: () => {
+      const [y, m] = state.month.split('-').map(Number);
+      $('#shareTitle').textContent = `Αποστολή: ${O.MONTHS_NOM[m - 1]} ${y}`;
+      $('#dlgShare').showModal();
+    },
+    'share-csv': () => deliverFile(`ores-${state.month}.csv`, O.toCSV(monthDays(state.month)), 'text/csv'),
+    'share-text': () => shareText(monthText(state.month)),
+    'copy-text': async () => { $('#dlgShare').close(); toast((await copyText(monthText(state.month))) ? 'Η σύνοψη αντιγράφηκε ✓' : 'Δεν μπόρεσα να την αντιγράψω.'); },
+    'export-all': () => deliverFile('ores-ola.csv', O.toCSV(state.days), 'text/csv'),
+    starter: () => deliverFile('ores.txt', '\n', 'text/plain'),
+    step: n => {
+      state.guide[n] = !state.guide[n];
+      store.set('guide', state.guide);
+      renderGuide();
+      if (state.guide[n]) {
+        const next = document.querySelector(`.step[data-step="${+n + 1}"]`);
+        if (next && !state.guide[+n + 1]) next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    clear: () => {
+      if (state.demo) { exitDemo(); closeDialogs(); return; }
+      if (!window.confirm('Να σβηστούν οι ώρες και οι διορθώσεις από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν.')) return;
+      ['log', 'overrides', 'bad', 'updatedAt', 'source'].forEach(k => store.remove(k));
+      Object.assign(state, { events: [], overrides: {}, bad: [], updatedAt: null, source: null });
+      closeDialogs();
+      render();
+      toast('Σβήστηκαν');
+    },
+  };
+
+  document.addEventListener('click', e => {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      copyText(copyBtn.dataset.copy).then(ok => {
+        copyBtn.textContent = ok ? 'Αντιγράφηκε ✓' : 'Κράτα πατημένο';
+        setTimeout(() => { copyBtn.textContent = 'Αντιγραφή'; }, 1800);
+      });
+      return;
+    }
+    const closeBtn = e.target.closest('[data-close]');
+    if (closeBtn) { closeBtn.closest('dialog').close(); return; }
+    const el = e.target.closest('[data-action]');
+    if (el) {
+      const [name, ...rest] = el.dataset.action.split(':');
+      if (actions[name]) actions[name](rest.join(':'));
+      return;
+    }
+    if (tipKey && !e.target.closest('#chart')) hideTip();
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.hero[role="button"]')) { e.preventDefault(); e.target.click(); }
+  });
+  // Κλείσιμο παραθύρου με πάτημα έξω από αυτό.
+  document.querySelectorAll('dialog').forEach(dlg => dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); }));
+
+  // Διάγραμμα: ποντίκι → πληροφορίες με το πέρασμα, κλικ → άνοιγμα.
+  // Αφή → πρώτο πάτημα πληροφορίες, δεύτερο (ή πάτημα στο συννεφάκι) → άνοιγμα.
+  let pointerType = 'mouse';
+  let pointerAt = 0;
+  const plot = $('#chart .plot');
+  plot.addEventListener('pointerdown', e => { pointerType = e.pointerType || 'mouse'; pointerAt = Date.now(); });
+  plot.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    const slot = e.target.closest('.slot');
+    if (slot && slot.dataset.key !== tipKey) showTip(slot);
+  });
+  plot.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hideTip(); });
+  plot.addEventListener('click', e => {
+    const slot = e.target.closest('.slot');
+    if (!slot) { hideTip(); return; }
+    if (pointerType === 'mouse' || tipKey === slot.dataset.key) openDay(slot.dataset.key);
+    else showTip(slot);
+  });
+  plot.addEventListener('focusin', e => {
+    const slot = e.target.closest('.slot');
+    if (slot && Date.now() - pointerAt > 500) showTip(slot); // μόνο από πληκτρολόγιο· το πάτημα το χειρίζεται το click
+  });
+  plot.addEventListener('keydown', e => {
+    const slot = e.target.closest('.slot');
+    if (slot && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDay(slot.dataset.key); }
+    if (e.key === 'Escape') hideTip();
+  });
+
+  $('#dayForm').addEventListener('submit', e => { e.preventDefault(); saveDay(); });
+  ['inStart', 'inEnd', 'inOff'].forEach(id => $('#' + id).addEventListener('input', updateDayCalc));
+  $('#inOff').addEventListener('change', updateDayCalc);
+  $('#sugBtn').addEventListener('click', e => {
+    const b = e.currentTarget;
+    $(b.dataset.field === 'end' ? '#inEnd' : '#inStart').value = b.dataset.time;
+    $('#daySuggest').hidden = true;
+    updateDayCalc();
+  });
+  $('#btnReset').addEventListener('click', () => {
+    const key = $('#dlgDay').dataset.key;
+    delete state.overrides[key];
+    saveData();
+    $('#dlgDay').close();
+    render();
+    toast('Επανήλθαν οι αυτόματες ώρες');
+  });
+  $('#addForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const key = $('#inAddDate').value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+    $('#dlgAdd').close();
+    openDay(key);
+  });
+  ['setTarget', 'setBreak', 'setWage', 'setName'].forEach(id => $('#' + id).addEventListener('change', readSettings));
+  $('#file').addEventListener('change', async e => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    try { importText(await f.text(), 'file'); } catch (err) { toast('Δεν μπόρεσα να διαβάσω το αρχείο.'); }
+    closeDialogs();
+    hideGuide();
+    render();
+  });
+
+  window.addEventListener('hashchange', () => { readHash(); if ($('#guide').hidden) render(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+  // Όσο είναι στη δουλειά, το ρολόι προχωράει· και στα μεσάνυχτα αλλάζει η μέρα.
+  setInterval(() => {
+    if (document.hidden || document.querySelector('dialog[open]')) return;
+    if (state.days.some(d => d.status === 'open') || O.dateKey(Date.now()) !== state.renderedDay) render();
+  }, 30000);
+  if (window.ResizeObserver) {
+    let lastW = 0;
+    new ResizeObserver(entries => {
+      const w = Math.floor(entries[0].contentRect.width);
+      if (w && w !== lastW && !$('#dash').hidden) { lastW = w; render(); }
+    }).observe($('#chart'));
+  }
+
+  load();
+  readHash();
+  if ($('#guide').hidden) render();
+})();
+</script>
+</body>
+</html>
