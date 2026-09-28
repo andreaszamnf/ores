@@ -482,6 +482,27 @@
     return issues;
   }
 
+  /* ---------- Τιπς ---------- */
+
+  // «12,50», «12.5», «7 €» → 12.5. Άδειο ή κάτι που δεν είναι ποσό → null.
+  function parseMoney(v) {
+    const s = String(v == null ? '' : v).replace(/[€\s]/g, '').replace(',', '.');
+    if (!/^\d*\.?\d+$|^\d+\.$/.test(s)) return null;
+    return Math.round(parseFloat(s) * 100) / 100;
+  }
+  // Τα τιπς φυλάγονται ως { 'YYYY-MM-DD': ποσό }. Σύνολο για τις μέρες από..έως.
+  function sumTips(tips, fromKey, toKey) {
+    let cents = 0;
+    let days = 0;
+    for (const [k, v] of Object.entries(tips || {})) {
+      if (k < fromKey || k > toKey || !(v > 0)) continue;
+      cents += Math.round(v * 100);
+      days++;
+    }
+    return { total: cents / 100, days };
+  }
+  const fmtMoneyCSV = v => (v ? v.toFixed(2).replace('.', ',') : '');
+
   /* ---------- Μορφοποίηση ---------- */
 
   function fmtDur(min) {
@@ -528,12 +549,14 @@
     return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }
   // Με «;» και δεκαδικό κόμμα, όπως τα θέλει το ελληνικό Excel.
-  function toCSV(days) {
-    const rows = [['Ημερομηνία', 'Ημέρα', 'Άφιξη', 'Αναχώρηση', 'Διάρκεια', 'Ώρες (δεκαδικές)', 'Υπερωρία', 'Σημείωση']];
+  function toCSV(days, tips = {}) {
+    const rows = [['Ημερομηνία', 'Ημέρα', 'Άφιξη', 'Αναχώρηση', 'Διάρκεια', 'Ώρες (δεκαδικές)', 'Υπερωρία', 'Τιπς (€)', 'Σημείωση']];
     let total = 0;
     let overtime = 0;
+    let tipCents = 0;
     for (const d of days) {
       const [y, m, dd] = d.key.split('-');
+      const tip = tips[d.key] || 0;
       rows.push([
         `${dd}/${m}/${y}`,
         WEEKDAYS[keyToDate(d.key).getDay()],
@@ -542,12 +565,14 @@
         d.minutes != null ? fmtHM(d.minutes) : '',
         d.minutes != null ? fmtDecimal(d.minutes) : '',
         d.overtime ? fmtHM(d.overtime) : '',
+        fmtMoneyCSV(tip),
         dayNote(d),
       ]);
-      if (d.minutes != null) { total += d.minutes; overtime += d.overtime; }
+      if (d.minutes != null) { total += d.minutes; overtime += d.overtime || 0; }
+      tipCents += Math.round(tip * 100);
     }
     rows.push([]);
-    rows.push(['Σύνολο', '', '', '', fmtHM(total), fmtDecimal(total), fmtHM(overtime), '']);
+    rows.push(['Σύνολο', '', '', '', fmtHM(total), fmtDecimal(total), fmtHM(overtime), fmtMoneyCSV(tipCents / 100), '']);
     return '﻿' + rows.map(r => r.map(csvCell).join(';')).join('\r\n') + '\r\n';
   }
 
@@ -557,6 +582,7 @@
     dateKey, keyToDate, addDays, atTime, weekRange, orthodoxEaster, holidayName,
     parseLog, normalizeEvents, mergeEvents, serializeEvents, decodeHash,
     buildDays, summarize, typicalTimes, suggestFix, diagnose,
+    parseMoney, sumTips,
     fmtDur, fmtHM, fmtDecimal, fmtClock, fmtEnd, fmtStamp, dayNote, toCSV,
   };
 });

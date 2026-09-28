@@ -142,6 +142,28 @@ svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-widt
 .tile .v .u:last-child { margin-right: 0; }
 .tile .s { margin-top: 5px; font-size: 13px; line-height: 1.35; color: var(--ink-2); }
 
+/* ---------- Τιπς ---------- */
+.cash {
+  display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 12px; padding: 14px 14px 14px 16px; text-align: left;
+}
+.cash .coin { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--accent-wash); color: var(--accent-strong); }
+.cash .coin svg.i { width: 22px; height: 22px; }
+.cash .txt { flex: 1; min-width: 0; }
+.cash .k { display: block; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.cash .v { display: block; margin-top: 1px; font-size: 24px; line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
+.cash .s { display: block; margin-top: 3px; font-size: 13px; color: var(--ink-2); }
+.cash .add { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 8px 14px; border-radius: 99px; background: var(--btn); color: #fff; font-size: 15px; font-weight: 600; }
+.cash .add svg.i { width: 18px; height: 18px; }
+.tip-total { margin: 6px 0 0; font-size: 44px; line-height: 1.05; font-weight: 700; letter-spacing: -.03em; }
+.chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+.chips .btn { min-height: 52px; padding: 8px 4px; font-size: 17px; }
+.add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; margin-top: 16px; }
+.add-row .btn { min-height: 50px; }
+.tip-log { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 32px; margin-top: 14px; }
+.err { margin: 8px 0 0; font-size: 14px; font-weight: 600; color: var(--critical); }
+.field .hint.err { margin: 0; font-weight: 600; }
+.d-cash { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+
 /* ---------- Μήνας ---------- */
 .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 30px 0 12px; }
 .section-head h2 { margin: 0; font-size: 21px; line-height: 1.2; letter-spacing: -.015em; }
@@ -381,6 +403,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   <symbol id="i-text" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-euro" viewBox="0 0 24 24"><path d="M17.5 6.5a7 7 0 1 0 0 11"/><path d="M4 10h9M4 14h9"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
@@ -402,6 +426,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <ul class="features">
       <li><svg class="i"><use href="#i-wifi"/></svg><span>Μία ρύθμιση στο iPhone, περίπου 5 λεπτά. Μετά δουλεύει μόνη της.</span></li>
       <li><svg class="i"><use href="#i-chart"/></svg><span>Ώρες ανά μέρα, εβδομάδα και μήνα, υπερωρίες, Κυριακές και αργίες.</span></li>
+      <li><svg class="i"><use href="#i-euro"/></svg><span>Σημειώνεις και τα τιπς κάθε μέρας με ένα πάτημα.</span></li>
       <li><svg class="i"><use href="#i-lock"/></svg><span>Όλα μένουν στο κινητό σου. Τίποτα δεν στέλνεται πουθενά.</span></li>
     </ul>
     <button class="btn primary block" type="button" data-action="guide">Ξεκίνα τη ρύθμιση</button>
@@ -415,6 +440,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <div class="card tile" id="kpiWeek"></div>
       <div class="card tile" id="kpiMonth"></div>
     </section>
+    <button class="card cash" type="button" id="cash" data-action="tips"></button>
 
     <div class="section-head">
       <h2 id="monthTitle"></h2>
@@ -593,10 +619,42 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <label class="field">Αναχώρηση<input type="time" id="inEnd"></label>
     </div>
     <p class="calc" id="dayCalc"></p>
+    <div class="fields" style="margin-top:16px">
+      <label class="field">Τιπς της μέρας (€)<input type="text" id="inDayTips" inputmode="decimal" autocomplete="off" placeholder="0"><span class="hint err" id="dayTipErr" hidden>Το ποσό δεν διαβάζεται. Γράψε π.χ. 12,50</span></label>
+    </div>
     <label class="check"><input type="checkbox" id="inOff">Να μη μετράει αυτή η μέρα</label>
     <div class="sheet-actions">
       <button class="btn" type="button" id="btnReset">Αυτόματες ώρες</button>
       <button class="btn primary" type="submit">Αποθήκευση</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Τιπς -->
+<dialog id="dlgTips" aria-labelledby="tipsTitle">
+  <form class="sheet" id="tipsForm">
+    <div class="grip"></div>
+    <div class="sheet-head">
+      <h3 id="tipsTitle">Τιπς</h3>
+      <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" id="tipsDay"></p>
+    <p class="tip-total num" id="tipsTotal" aria-live="polite"></p>
+    <div class="chips">
+      <button class="btn" type="button" data-tip="0.5">+0,50</button>
+      <button class="btn" type="button" data-tip="1">+1</button>
+      <button class="btn" type="button" data-tip="2">+2</button>
+      <button class="btn" type="button" data-tip="5">+5</button>
+    </div>
+    <div class="add-row">
+      <label class="field">Άλλο ποσό (€)<input type="text" id="inTipAdd" inputmode="decimal" autocomplete="off" placeholder="π.χ. 3,50"></label>
+      <button class="btn primary" type="submit">Πρόσθεσε</button>
+    </div>
+    <p class="err" id="tipsErr" hidden></p>
+    <div class="tip-log" id="tipsLog"></div>
+    <div class="sheet-actions">
+      <button class="btn" type="button" id="tipsFix">Διόρθωση συνόλου</button>
+      <button class="btn primary" type="button" data-close>Τέλος</button>
     </div>
   </form>
 </dialog>
@@ -626,7 +684,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <button class="icon-btn sm" type="button" data-close aria-label="Κλείσιμο"><svg class="i"><use href="#i-x"/></svg></button>
     </div>
     <div class="menu">
-      <button class="btn block" type="button" data-action="share-csv"><svg class="i"><use href="#i-file"/></svg><span>Αρχείο Excel<small>Όλες οι μέρες του μήνα, για λογιστή ή εργοδότη</small></span></button>
+      <button class="btn block" type="button" data-action="share-csv"><svg class="i"><use href="#i-file"/></svg><span>Αρχείο Excel<small>Όλες οι μέρες του μήνα, με ώρες και τιπς</small></span></button>
       <button class="btn block" type="button" data-action="share-text"><svg class="i"><use href="#i-text"/></svg><span>Σύνοψη σε μήνυμα<small>Για Viber, WhatsApp, email</small></span></button>
       <button class="btn block" type="button" data-action="copy-text"><svg class="i"><use href="#i-copy"/></svg><span>Αντιγραφή σύνοψης</span></button>
     </div>
@@ -700,7 +758,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
 
   const DEFAULTS = { name: 'Πανούλη', targetHours: 8, breakMin: 0, wage: 0 };
   const state = {
-    events: [], overrides: {}, bad: [], updatedAt: null, source: null,
+    events: [], overrides: {}, tips: {}, bad: [], updatedAt: null, source: null,
     settings: { ...DEFAULTS },
     guide: {},
     demo: null, // όσο δείχνουμε παράδειγμα, εδώ περιμένουν τα αληθινά δεδομένα
@@ -712,6 +770,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   function load() {
     state.events = O.parseLog(store.get('log', '')).events;
     state.overrides = store.get('overrides', {}) || {};
+    state.tips = store.get('tips', {}) || {};
     state.bad = store.get('bad', []) || [];
     state.updatedAt = store.get('updatedAt', null);
     state.emptyAt = store.get('emptyAt', null);
@@ -723,6 +782,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (state.demo) return;
     store.set('log', O.serializeEvents(state.events));
     store.set('overrides', state.overrides);
+    store.set('tips', state.tips);
     store.set('bad', state.bad);
     store.set('updatedAt', state.updatedAt);
     store.set('source', state.source);
@@ -807,12 +867,24 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     }
     return lines.join('\n');
   }
+  // Φανταστικά τιπς για το παράδειγμα: λίγα ευρώ τις περισσότερες μέρες.
+  function demoTips(events) {
+    let seed = 7919;
+    const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
+    const tips = {};
+    for (const key of new Set(events.map(e => O.dateKey(e.t)))) {
+      if (rnd() < 0.15) continue;
+      tips[key] = Math.round(rnd() * 36) / 2 + 2;
+    }
+    return tips;
+  }
   function enterDemo() {
     if (!state.demo) {
-      state.demo = { events: state.events, overrides: state.overrides, bad: state.bad, updatedAt: state.updatedAt, source: state.source };
+      state.demo = { events: state.events, overrides: state.overrides, tips: state.tips, bad: state.bad, updatedAt: state.updatedAt, source: state.source };
     }
     state.events = O.parseLog(demoLog(Date.now())).events;
     state.overrides = {};
+    state.tips = demoTips(state.events);
     state.bad = [];
     state.updatedAt = Date.now();
     state.source = 'demo';
@@ -841,6 +913,9 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   const hoursNum = min => { const h = min / 60; return Number.isInteger(h) ? String(h) : h.toFixed(1).replace('.', ','); };
   const hoursWord = min => `${hoursNum(min)}ωρο`; // «8ωρο»
   const hoursShort = min => `${hoursNum(min)}ω`; // «8ω»
+  // Ποσά με λεπτά μόνο όταν χρειάζονται: «12 €», «12,50 €».
+  const money = v => new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR', minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 }).format(v || 0);
+  const moneyInput = v => (v ? String(v).replace('.', ',') : '');
   const eur = v => new Intl.NumberFormat('el-GR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v);
   function relTime(ms, now) {
     const k = O.dateKey(ms);
@@ -871,7 +946,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const now = Date.now();
     state.days = O.buildDays(state.events, calcOpts(now));
     state.renderedDay = O.dateKey(now);
-    const has = state.days.length > 0;
+    const has = state.days.length > 0 || Object.keys(state.tips).length > 0;
     const keepTip = tipKey; // το συννεφάκι μένει ανοιχτό όταν ανανεώνεται η οθόνη
     hideTip();
     renderHeader(now);
@@ -881,6 +956,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (has) {
       renderHero(now);
       renderKpis(now);
+      renderCash(now);
       renderMonth(now);
       const slot = keepTip && document.querySelector(`#chart .slot[data-key="${keepTip}"]`);
       if (slot) showTip(slot);
@@ -1006,7 +1082,38 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     $('#kpiMonth').innerHTML = tileHTML(O.MONTHS_NOM[+ym.slice(5) - 1], O.summarize(state.days, ym + '-01', ym + '-31'));
   }
 
-  function monthDays(ym) { return state.days.filter(d => d.key.slice(0, 7) === ym); }
+  // Μέρες που έχουν μόνο τιπς, χωρίς ώρες, μπαίνουν κι αυτές στη λίστα για να φαίνονται και να διορθώνονται.
+  function withTipDays(list, inRange) {
+    const have = new Set(list.map(d => d.key));
+    const extra = Object.keys(state.tips)
+      .filter(key => state.tips[key] > 0 && !have.has(key) && inRange(key))
+      .map(key => ({
+        key, events: [], start: null, end: null, minutes: null, status: 'none', overtime: 0,
+        sunday: O.keyToDate(key).getDay() === 0, holiday: O.holidayName(key),
+      }));
+    return extra.length ? [...list, ...extra].sort((a, b) => (a.key < b.key ? -1 : 1)) : list;
+  }
+  function monthDays(ym) { return withTipDays(state.days.filter(d => d.key.slice(0, 7) === ym), key => key.slice(0, 7) === ym); }
+  const allDays = () => withTipDays(state.days, () => true);
+
+  /* Τιπς: μετράνε στη μέρα της βάρδιας (αν δουλεύει μετά τα μεσάνυχτα, στη μέρα που ξεκίνησε). */
+  function cashKey(now) {
+    const open = state.days.find(d => d.status === 'open');
+    return open ? open.key : O.dateKey(now);
+  }
+  function renderCash(now) {
+    const todayKey = O.dateKey(now);
+    const key = cashKey(now);
+    const [ws, we] = O.weekRange(todayKey);
+    const ym = todayKey.slice(0, 7);
+    const week = O.sumTips(state.tips, ws, we).total;
+    const month = O.sumTips(state.tips, ym + '-01', ym + '-31').total;
+    $('#cash').innerHTML = `<span class="coin">${icon('euro')}</span>`
+      + `<span class="txt"><span class="k">${key === todayKey ? 'Τιπς σήμερα' : 'Τιπς βάρδιας (από χθες)'}</span>`
+      + `<span class="v num">${esc(money(state.tips[key]))}</span>`
+      + `<span class="s num">Εβδομάδα ${esc(money(week))} · ${esc(O.MONTHS_NOM[+ym.slice(5) - 1])} ${esc(money(month))}</span></span>`
+      + `<span class="add">${icon('plus')}Πρόσθεσε</span>`;
+  }
 
   function renderMonth(now) {
     const ym = state.month;
@@ -1015,7 +1122,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const sum = O.summarize(list, ym + '-01', ym + '-31');
     const target = calcOpts(now).targetMin;
     $('#monthTitle').innerHTML = `${O.MONTHS_NOM[m - 1]} ${y}<span class="sub num">${sum.days ? `${O.fmtDur(sum.minutes)} σε ${daysWord(sum.days)}` : 'Καμία μέρα'}</span>`;
-    const firstYm = state.days.length ? state.days[0].key.slice(0, 7) : ym;
+    const firstKey = [state.days.length ? state.days[0].key : null, ...Object.keys(state.tips)].filter(Boolean).sort()[0];
+    const firstYm = firstKey ? firstKey.slice(0, 7) : ym;
     const nowYm = O.dateKey(now).slice(0, 7);
     $('#prevMonth').disabled = ym <= firstYm;
     $('#nextMonth').disabled = ym >= nowYm;
@@ -1025,6 +1133,9 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     stats.push(['Κυριακές & αργίες', sum.specialDays ? `${O.fmtDur(sum.special)} (${daysWord(sum.specialDays)})` : '—']);
     const wage = +state.settings.wage || 0;
     if (wage) stats.push(['Αποδοχές περίπου', sum.minutes ? eur((sum.minutes / 60) * wage) : '—']);
+    const tips = O.sumTips(state.tips, ym + '-01', ym + '-31');
+    stats.push(['Τιπς', tips.total ? `${money(tips.total)} (${daysWord(tips.days)})` : '—']);
+    if (tips.total && sum.minutes) stats.push(['Τιπς ανά ώρα', money(Math.round((tips.total / (sum.minutes / 60)) * 100) / 100)]);
     $('#monthStats').innerHTML = stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd class="num">${esc(v)}</dd></div>`).join('');
 
     renderChart(list, y, m, target, sum);
@@ -1099,7 +1210,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   let tipKey = null;
   function showTip(slot) {
     const key = slot.dataset.key;
-    const d = state.days.find(x => x.key === key);
+    const d = monthDays(key.slice(0, 7)).find(x => x.key === key);
     if (!d) return hideTip();
     document.querySelectorAll('#chart .slot.on').forEach(s => s.classList.remove('on'));
     slot.classList.add('on');
@@ -1108,6 +1219,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     tip.innerHTML = `<b class="num">${d.minutes != null && d.status !== 'off' ? O.fmtDur(d.minutes) : '—'}</b>`
       + `<span>${esc(O.WEEKDAYS_SHORT[O.keyToDate(key).getDay()])} ${shortDate(key)} · <span class="num">${esc(timesText(d))}</span></span>`
       + (note ? `<span class="k">${esc(note)}</span>` : '')
+      + (state.tips[key] ? `<span class="num">Τιπς ${esc(money(state.tips[key]))}</span>` : '')
       + '<span class="more">Άνοιγμα ›</span>';
     tip.dataset.action = `day:${key}`;
     tip.hidden = false;
@@ -1170,7 +1282,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
         const range = a.getMonth() === b.getMonth()
           ? `${a.getDate()}–${b.getDate()} ${MONTHS_SHORT[b.getMonth()]}`
           : `${a.getDate()} ${MONTHS_SHORT[a.getMonth()]} – ${b.getDate()} ${MONTHS_SHORT[b.getMonth()]}`;
-        html += `<li class="week-h"><span>Εβδομάδα ${range}</span><span class="num">${O.fmtDur(wsum.minutes)}</span></li>`;
+        const wtips = O.sumTips(state.tips, ws, we).total;
+        html += `<li class="week-h"><span>Εβδομάδα ${range}</span><span class="num">${O.fmtDur(wsum.minutes)}${wtips ? ` · ${esc(money(wtips))}` : ''}</span></li>`;
       }
       html += `<li>${dayRowHTML(d, lo, hi, todayKey, now)}</li>`;
     }
@@ -1197,7 +1310,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     return `<button type="button" class="${cls}" data-action="day:${d.key}">`
       + `<span class="d-date"><b>${date.getDate()}</b><small>${O.WEEKDAYS_SHORT[date.getDay()]}</small></span>`
       + `<span class="d-mid"><span class="d-times num">${esc(timesText(d))}</span><span class="d-track">${bar}</span>${notes.length ? `<span class="d-note">${notes.join('')}</span>` : ''}</span>`
-      + `<span class="d-right"><span class="d-dur num">${d.minutes != null ? O.fmtDur(d.minutes) : '—'}</span>${d.overtime && d.status !== 'off' ? `<span class="d-ot num">+${O.fmtDur(d.overtime)}</span>` : ''}</span>`
+      + `<span class="d-right"><span class="d-dur num">${d.minutes != null ? O.fmtDur(d.minutes) : '—'}</span>${d.overtime && d.status !== 'off' ? `<span class="d-ot num">+${O.fmtDur(d.overtime)}</span>` : ''}${state.tips[d.key] ? `<span class="d-cash num">τιπς ${esc(money(state.tips[d.key]))}</span>` : ''}</span>`
       + '</button>';
   }
 
@@ -1234,6 +1347,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     $('#inStart').value = cur && cur.start != null ? O.fmtClock(cur.start) : '';
     $('#inEnd').value = cur && cur.status === 'ok' && cur.end != null ? O.fmtClock(cur.end) : '';
     $('#inOff').checked = !!(cur && cur.status === 'off');
+    $('#inDayTips').value = moneyInput(state.tips[key]);
+    $('#dayTipErr').hidden = true;
     $('#btnReset').hidden = !state.overrides[key];
 
     const sug = cur && O.suggestFix(cur, O.typicalTimes(state.days, key));
@@ -1289,6 +1404,10 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   }
   function saveDay() {
     const key = $('#dlgDay').dataset.key;
+    const tipRaw = $('#inDayTips').value.trim();
+    const tip = tipRaw ? O.parseMoney(tipRaw) : 0;
+    if (tip == null || tip > 10000) { $('#dayTipErr').hidden = false; $('#inDayTips').focus(); return; }
+    setTip(key, tip);
     const ov = formOverride(key);
     if (ov) state.overrides[key] = ov; else delete state.overrides[key];
     saveData();
@@ -1296,6 +1415,40 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     $('#dlgDay').close();
     render();
     toast('Αποθηκεύτηκε ✓');
+  }
+
+  /* ---------- Τιπς: γρήγορη προσθήκη ---------- */
+  let tipsAdded = []; // ό,τι προστέθηκε από τότε που άνοιξε το παράθυρο, για αναίρεση
+  function setTip(key, value) {
+    const v = Math.round((value || 0) * 100) / 100;
+    if (v > 0) state.tips[key] = v; else delete state.tips[key];
+    saveData();
+  }
+  function openTips(key) {
+    hideTip();
+    $('#dlgTips').dataset.key = key;
+    tipsAdded = [];
+    $('#inTipAdd').value = '';
+    $('#tipsErr').hidden = true;
+    renderTips();
+    $('#dlgTips').showModal();
+  }
+  function renderTips() {
+    const key = $('#dlgTips').dataset.key;
+    const todayKey = O.dateKey(Date.now());
+    $('#tipsDay').textContent = key === todayKey ? `Σήμερα, ${dayName(key)}` : `Βάρδια της ${dayName(key)}`;
+    $('#tipsTotal').textContent = money(state.tips[key]);
+    $('#tipsLog').innerHTML = tipsAdded.length
+      ? tipsAdded.map(a => `<span class="ev"><b class="num">+${esc(money(a))}</b></span>`).join('')
+        + `<button type="button" class="link" id="tipsUndo">Αναίρεση τελευταίου</button>`
+      : '<span class="muted">Πάτα ένα ποσό κάθε φορά που παίρνεις τιπ.</span>';
+  }
+  function addTip(amount) {
+    const key = $('#dlgTips').dataset.key;
+    setTip(key, (state.tips[key] || 0) + amount);
+    tipsAdded.push(amount);
+    renderTips();
+    render();
   }
 
   /* ---------- Ρυθμίσεις ---------- */
@@ -1384,12 +1537,15 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (sum.days) lines.push(`Μέσος όρος: ${O.fmtDur(sum.average)} τη μέρα`);
     if (sum.overtime) lines.push(`Υπερωρίες: ${O.fmtDur(sum.overtime)}`);
     if (sum.specialDays) lines.push(`Κυριακές & αργίες: ${daysWord(sum.specialDays)} (${O.fmtDur(sum.special)})`);
+    const tips = O.sumTips(state.tips, ym + '-01', ym + '-31');
+    if (tips.total) lines.push(`Τιπς: ${money(tips.total)}`);
     lines.push('');
     for (const d of list) {
       const date = O.keyToDate(d.key);
       const dur = d.minutes != null && d.status !== 'off' ? O.fmtDur(d.minutes) : '—';
       const note = [specialText(d), d.status !== 'ok' ? statusText(d) : ''].filter(Boolean).join(', ');
-      lines.push(`${O.WEEKDAYS_SHORT[date.getDay()]} ${shortDate(d.key)}  ${timesText(d)}  ${dur}${note ? `  (${note})` : ''}`);
+      const tip = state.tips[d.key] ? `  τιπς ${money(state.tips[d.key])}` : '';
+      lines.push(`${O.WEEKDAYS_SHORT[date.getDay()]} ${shortDate(d.key)}  ${timesText(d)}  ${dur}${tip}${note ? `  (${note})` : ''}`);
     }
     return lines.join('\n');
   }
@@ -1459,6 +1615,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     'prev-month': () => { const [y, m] = state.month.split('-').map(Number); state.month = O.dateKey(new Date(y, m - 2, 1).getTime()).slice(0, 7); render(); },
     'next-month': () => { const [y, m] = state.month.split('-').map(Number); state.month = O.dateKey(new Date(y, m, 1).getTime()).slice(0, 7); render(); },
     day: key => openDay(key),
+    tips: () => openTips(cashKey(Date.now())),
     'add-day': () => {
       const today = O.dateKey(Date.now());
       $('#inAddDate').value = today;
@@ -1470,10 +1627,10 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       $('#shareTitle').textContent = `Αποστολή: ${O.MONTHS_NOM[m - 1]} ${y}`;
       $('#dlgShare').showModal();
     },
-    'share-csv': () => deliverFile(`ores-${state.month}.csv`, O.toCSV(monthDays(state.month)), 'text/csv'),
+    'share-csv': () => deliverFile(`ores-${state.month}.csv`, O.toCSV(monthDays(state.month), state.tips), 'text/csv'),
     'share-text': () => shareText(monthText(state.month)),
     'copy-text': async () => { $('#dlgShare').close(); toast((await copyText(monthText(state.month))) ? 'Η σύνοψη αντιγράφηκε ✓' : 'Δεν μπόρεσα να την αντιγράψω.'); },
-    'export-all': () => deliverFile('ores-ola.csv', O.toCSV(state.days), 'text/csv'),
+    'export-all': () => deliverFile('ores-ola.csv', O.toCSV(allDays(), state.tips), 'text/csv'),
     starter: () => deliverFile('ores.txt', '\n', 'text/plain'),
     step: n => {
       state.guide[n] = !state.guide[n];
@@ -1486,9 +1643,9 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     },
     clear: () => {
       if (state.demo) { exitDemo(); closeDialogs(); return; }
-      if (!window.confirm('Να σβηστούν οι ώρες και οι διορθώσεις από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν.')) return;
-      ['log', 'overrides', 'bad', 'updatedAt', 'source', 'emptyAt'].forEach(k => store.remove(k));
-      Object.assign(state, { events: [], overrides: {}, bad: [], updatedAt: null, source: null, emptyAt: null });
+      if (!window.confirm('Να σβηστούν οι ώρες, οι διορθώσεις και τα τιπς από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν. Τα τιπς όμως θα χαθούν οριστικά.')) return;
+      ['log', 'overrides', 'tips', 'bad', 'updatedAt', 'source', 'emptyAt'].forEach(k => store.remove(k));
+      Object.assign(state, { events: [], overrides: {}, tips: {}, bad: [], updatedAt: null, source: null, emptyAt: null });
       closeDialogs();
       render();
       toast('Σβήστηκαν');
@@ -1549,6 +1706,37 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   });
 
   $('#dayForm').addEventListener('submit', e => { e.preventDefault(); saveDay(); });
+  $('#dlgTips').addEventListener('click', e => {
+    const chip = e.target.closest('[data-tip]');
+    if (chip) { $('#tipsErr').hidden = true; addTip(+chip.dataset.tip); return; }
+    if (e.target.closest('#tipsUndo')) {
+      const key = $('#dlgTips').dataset.key;
+      setTip(key, (state.tips[key] || 0) - tipsAdded.pop());
+      renderTips();
+      render();
+    }
+  });
+  $('#tipsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = $('#inTipAdd');
+    const amount = O.parseMoney(input.value);
+    if (!amount || amount > 10000) {
+      $('#tipsErr').textContent = input.value.trim() ? 'Το ποσό δεν διαβάζεται. Γράψε π.χ. 3,50' : 'Γράψε πρώτα ένα ποσό.';
+      $('#tipsErr').hidden = false;
+      input.focus();
+      return;
+    }
+    input.value = '';
+    addTip(amount);
+  });
+  $('#inTipAdd').addEventListener('input', () => { $('#tipsErr').hidden = true; });
+  $('#inDayTips').addEventListener('input', () => { $('#dayTipErr').hidden = true; });
+  $('#tipsFix').addEventListener('click', () => {
+    const key = $('#dlgTips').dataset.key;
+    $('#dlgTips').close();
+    openDay(key);
+    $('#inDayTips').focus();
+  });
   ['inStart', 'inEnd', 'inOff'].forEach(id => $('#' + id).addEventListener('input', updateDayCalc));
   $('#inOff').addEventListener('change', updateDayCalc);
   $('#sugBtn').addEventListener('click', e => {
