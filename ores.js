@@ -6,6 +6,9 @@
  *   2026-09-23 08:02:11 IN
  *   2026-09-23 16:10:45 OUT
  * Από αυτές βγαίνει, για κάθε μέρα, η πρώτη σύνδεση και η τελευταία αποσύνδεση.
+ * Η συντόμευση «Τιπς στο iCloud» γράφει στο ίδιο αρχείο και τα τιπς, π.χ.
+ *   TIPS 2026-09-23 = 12.50
+ * (το σύνολο της μέρας· μετράει η τελευταία γραμμή για κάθε μέρα, 0 = σβήστηκαν).
  *
  * Το ίδιο αρχείο το φορτώνει η σελίδα (window.Ores) και τα tests (require).
  */
@@ -172,12 +175,21 @@
     return out.sort((a, b) => a.t - b.t || (a.type === b.type ? 0 : a.type === 'in' ? -1 : 1));
   }
 
+  const TIPS_LINE = /^TIPS\s+(\d{4}-\d{2}-\d{2})\s*=\s*(\d+(?:[.,]\d+)?)\s*$/i;
+  const tipsLine = (key, value) => `TIPS ${key} = ${(value || 0).toFixed(2)}`;
+
   function parseLog(text) {
     const events = [];
     const bad = [];
+    const tips = {};
     for (const raw of String(text == null ? '' : text).split(/\r\n|\r|\n/)) {
       const line = raw.trim();
       if (!line) continue;
+      const tip = TIPS_LINE.exec(line);
+      if (tip) {
+        const v = parseFloat(tip[2].replace(',', '.'));
+        if (Number.isFinite(v)) { tips[tip[1]] = Math.round(v * 100) / 100; continue; }
+      }
       const stamps = findStamps(line);
       if (!stamps.length) {
         if (line[0] !== '#') bad.push(line);
@@ -191,7 +203,7 @@
         else if (!bad.includes(line)) bad.push(line);
       });
     }
-    return { events: normalizeEvents(events), bad };
+    return { events: normalizeEvents(events), bad, tips };
   }
 
   const mergeEvents = (a, b) => normalizeEvents(a.concat(b));
@@ -582,7 +594,7 @@
     dateKey, keyToDate, addDays, atTime, weekRange, orthodoxEaster, holidayName,
     parseLog, normalizeEvents, mergeEvents, serializeEvents, decodeHash,
     buildDays, summarize, typicalTimes, suggestFix, diagnose,
-    parseMoney, sumTips,
+    parseMoney, sumTips, tipsLine,
     fmtDur, fmtHM, fmtDecimal, fmtClock, fmtEnd, fmtStamp, dayNote, toCSV,
   };
 });

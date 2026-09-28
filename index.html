@@ -554,6 +554,23 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <div class="done-row"><button class="btn sm" type="button" data-action="step:4">Έγινε</button></div>
   </section>
 
+  <section class="card step" id="g-tips">
+    <div class="step-head"><span class="step-num">€</span><div><h2>Αντίγραφο των τιπς στο iCloud</h2><p class="why">Προαιρετικό. Τα τιπς γράφονται μέσα στο ores.txt, μαζί με τις ώρες, και δεν χάνονται αν σβηστεί το Safari.</p></div></div>
+    <ol>
+      <li>Στις <b>Συντομεύσεις</b>, στην καρτέλα <b>Συντομεύσεις</b> <span class="en">(Shortcuts)</span>, πάτα το <b>+</b>.</li>
+      <li>Πρόσθεσε <b>Προσάρτηση σε αρχείο κειμένου</b> <span class="en">(Append to Text File)</span>.</li>
+      <li>Πάτα στο πεδίο του κειμένου και διάλεξε από τη γραμμή πάνω από το πληκτρολόγιο το μπλε <b>Είσοδος συντόμευσης</b> <span class="en">(Shortcut Input)</span>.
+        <span class="preview">Προσάρτηση <span class="var">Είσοδος συντόμευσης</span> σε <span class="var">ores.txt</span></span>
+        Αν εμφανιστεί πάνω πάνω μια γραμμή «Λήψη … από …» <span class="en">(Receive … from …)</span>, άφησέ την όπως είναι.</li>
+      <li>Για αρχείο διάλεξε το <b>ίδιο ores.txt</b> που γράφουν οι αυτοματισμοί «Έφτασα» και «Έφυγα». Άνοιξε το <b>Νέα γραμμή</b> <span class="en">(Make New Line)</span>.</li>
+      <li>Πρόσθεσε <b>Εκτέλεση συντόμευσης</b> <span class="en">(Run Shortcut)</span> και διάλεξε την <b>Οι ώρες μου</b>. Έτσι, μόλις γραφτούν τα τιπς, ξανανοίγει η εφαρμογή.</li>
+      <li>Πάτα το όνομα πάνω πάνω → <b>Μετονομασία</b> <span class="en">(Rename)</span> και γράψε ακριβώς:
+        <span class="copy"><code>Τιπς στο iCloud</code><button type="button" data-copy="Τιπς στο iCloud">Αντιγραφή</button></span></li>
+      <li>Πάτα <b>Έγινε</b> εδώ κάτω. Μετά, για δοκιμή, πρόσθεσε ένα τιπ και πάτα <b>Τέλος</b>. Αν το Safari ρωτήσει αν θα ανοίξει τις Συντομεύσεις, πάτα <b>Άνοιγμα</b>. Θα ανοίξουν για λίγο οι Συντομεύσεις και μετά ξανά η εφαρμογή. Στις <b>Ρυθμίσεις</b> θα γράφει «Τα τιπς είναι και στο iCloud».</li>
+    </ol>
+    <div class="done-row"><button class="btn sm" type="button" data-action="tips-setup">Έγινε</button></div>
+  </section>
+
   <section class="card tips">
     <h2>Καλό να ξέρεις</h2>
     <ul>
@@ -561,7 +578,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <li>Κράτα το Wi‑Fi του κινητού ανοιχτό. Αν κλείσει το κινητό στη δουλειά, η μέρα θα έχει σημάδι και η εφαρμογή θα σου προτείνει την ώρα που φεύγεις συνήθως.</li>
       <li>Το iPhone μπορεί να καταλάβει ότι έφυγες ένα-δυο λεπτά αργότερα.</li>
       <li>Άνοιγε την εφαρμογή πάντα από το εικονίδιο <b>Οι ώρες μου</b>. Έτσι φέρνει τις τελευταίες ώρες.</li>
-      <li>Οι ώρες φυλάγονται στο αρχείο ores.txt στο iCloud Drive και οι διορθώσεις σου στο Safari. Τίποτα δεν στέλνεται πουθενά.</li>
+      <li>Οι ώρες φυλάγονται στο αρχείο ores.txt στο iCloud Drive και οι διορθώσεις σου στο Safari. Τα τιπς μένουν στο Safari, και στο ores.txt αν κάνεις το αντίγραφο πιο πάνω. Τίποτα δεν στέλνεται πουθενά.</li>
     </ul>
   </section>
 
@@ -652,9 +669,10 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     </div>
     <p class="err" id="tipsErr" hidden></p>
     <div class="tip-log" id="tipsLog"></div>
+    <p class="muted" id="tipsBackup"></p>
     <div class="sheet-actions">
       <button class="btn" type="button" id="tipsFix">Διόρθωση συνόλου</button>
-      <button class="btn primary" type="button" data-close>Τέλος</button>
+      <button class="btn primary" type="button" id="tipsDone">Τέλος</button>
     </div>
   </form>
 </dialog>
@@ -701,6 +719,8 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     </div>
     <h4>Έλεγχος ρύθμισης iPhone</h4>
     <div class="health" id="health"></div>
+    <h4>Αντίγραφο των τιπς</h4>
+    <div class="health" id="tipsHealth"></div>
     <h4>Το ωράριό σου</h4>
     <div class="fields">
       <label class="field">Κανονικό ωράριο (ώρες τη μέρα)<input type="number" id="setTarget" inputmode="decimal" min="0" max="24" step="0.5"><span class="hint">Ό,τι δουλεύεις παραπάνω μετράει ως υπερωρία. Βάλε 0 για να μη μετράει.</span></label>
@@ -758,7 +778,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
 
   const DEFAULTS = { name: 'Πανούλη', targetHours: 8, breakMin: 0, wage: 0 };
   const state = {
-    events: [], overrides: {}, tips: {}, bad: [], updatedAt: null, source: null,
+    events: [], overrides: {}, tips: {}, tipsPending: {}, bad: [], updatedAt: null, source: null,
     settings: { ...DEFAULTS },
     guide: {},
     demo: null, // όσο δείχνουμε παράδειγμα, εδώ περιμένουν τα αληθινά δεδομένα
@@ -771,6 +791,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     state.events = O.parseLog(store.get('log', '')).events;
     state.overrides = store.get('overrides', {}) || {};
     state.tips = store.get('tips', {}) || {};
+    state.tipsPending = store.get('tipsPending', {}) || {};
     state.bad = store.get('bad', []) || [];
     state.updatedAt = store.get('updatedAt', null);
     state.emptyAt = store.get('emptyAt', null);
@@ -783,6 +804,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     store.set('log', O.serializeEvents(state.events));
     store.set('overrides', state.overrides);
     store.set('tips', state.tips);
+    store.set('tipsPending', state.tipsPending);
     store.set('bad', state.bad);
     store.set('updatedAt', state.updatedAt);
     store.set('source', state.source);
@@ -812,6 +834,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const parsed = O.parseLog(raw);
     const before = state.events.length;
     state.events = O.mergeEvents(state.events, parsed.events);
+    mergeFileTips(parsed.tips);
     state.bad = parsed.bad.slice(0, 20);
     state.updatedAt = Date.now();
     state.emptyAt = null;
@@ -823,6 +846,18 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     if (!parsed.events.length) toast('Δεν βρέθηκαν ώρες στο αρχείο. Δες τι λέει ο έλεγχος πάνω πάνω.');
     else if (source === 'shortcut') toast(added ? `Ενημερώθηκε ✓ ${added === 1 ? '1 νέα καταγραφή' : added + ' νέες καταγραφές'}` : 'Ενημερώθηκε ✓');
     else toast(`Φορτώθηκαν ${parsed.events.length} καταγραφές ✓`);
+  }
+
+  // Τα τιπς του ores.txt: όσα δεν έχουν αλλάξει εδώ από τον τελευταίο συγχρονισμό παίρνουν την τιμή του αρχείου
+  // (έτσι ξαναέρχονται αν σβηστεί το Safari)· όσα περιμένουν να γραφτούν κρατάνε την τιμή του κινητού.
+  function mergeFileTips(fileTips) {
+    for (const [key, v] of Object.entries(fileTips || {})) {
+      if (key in state.tipsPending) {
+        if (Math.round(state.tipsPending[key] * 100) === Math.round(v * 100)) delete state.tipsPending[key];
+        continue;
+      }
+      if (v > 0) state.tips[key] = v; else delete state.tips[key];
+    }
   }
 
   // Η συντόμευση ανοίγει τη σελίδα με όλο το ores.txt μετά το # (δεν φεύγει ποτέ από το κινητό).
@@ -880,11 +915,12 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   }
   function enterDemo() {
     if (!state.demo) {
-      state.demo = { events: state.events, overrides: state.overrides, tips: state.tips, bad: state.bad, updatedAt: state.updatedAt, source: state.source };
+      state.demo = { events: state.events, overrides: state.overrides, tips: state.tips, tipsPending: state.tipsPending, bad: state.bad, updatedAt: state.updatedAt, source: state.source };
     }
     state.events = O.parseLog(demoLog(Date.now())).events;
     state.overrides = {};
     state.tips = demoTips(state.events);
+    state.tipsPending = {};
     state.bad = [];
     state.updatedAt = Date.now();
     state.source = 'demo';
@@ -1001,6 +1037,11 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       if (emptyPending() && !dismissed.has('empty')) parts.push(emptyNoticeHTML());
       const issues = O.diagnose({ events: state.events, days: state.days, bad: state.bad, now }).filter(i => !dismissed.has(i.id));
       issues.slice(0, 2).forEach(i => parts.push(issueHTML(i)));
+      if (tipsSyncOn() && pendingCount() && !dismissed.has('tips')) {
+        const n = pendingCount();
+        parts.push(noticeHTML('warn', n === 1 ? 'Τα τιπς 1 μέρας δεν γράφτηκαν στο iCloud' : `Τα τιπς ${n} ημερών δεν γράφτηκαν στο iCloud`,
+          'Μέχρι να γραφτούν, είναι μόνο στο Safari αυτού του κινητού.', [['sync-tips', 'Γράψ\' τα τώρα'], ['guide:tips', 'Οδηγίες']]));
+      }
       if (state.events.length && state.updatedAt && now - state.updatedAt > 12 * HOUR) {
         parts.push(noticeHTML('info', `Οι ώρες είναι από ${relTime(state.updatedAt, now)}`, 'Για τις τελευταίες, άνοιξε την εφαρμογή από το εικονίδιο «Οι ώρες μου».'));
       }
@@ -1407,7 +1448,9 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const tipRaw = $('#inDayTips').value.trim();
     const tip = tipRaw ? O.parseMoney(tipRaw) : 0;
     if (tip == null || tip > 10000) { $('#dayTipErr').hidden = false; $('#inDayTips').focus(); return; }
+    const tipChanged = Math.round((state.tips[key] || 0) * 100) !== Math.round(tip * 100);
     setTip(key, tip);
+    if (tipChanged && tipsSyncOn()) setTimeout(syncTips, 400);
     const ov = formOverride(key);
     if (ov) state.overrides[key] = ov; else delete state.overrides[key];
     saveData();
@@ -1420,9 +1463,23 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   /* ---------- Τιπς: γρήγορη προσθήκη ---------- */
   let tipsAdded = []; // ό,τι προστέθηκε από τότε που άνοιξε το παράθυρο, για αναίρεση
   function setTip(key, value) {
-    const v = Math.round((value || 0) * 100) / 100;
+    const v = Math.max(0, Math.round((value || 0) * 100) / 100);
+    if (Math.round((state.tips[key] || 0) * 100) === Math.round(v * 100)) return;
     if (v > 0) state.tips[key] = v; else delete state.tips[key];
+    if (!state.demo) state.tipsPending[key] = v;
     saveData();
+  }
+
+  /* Αντίγραφο στο iCloud: η συντόμευση «Τιπς στο iCloud» προσθέτει τις γραμμές στο ores.txt
+     και μετά τρέχει την «Οι ώρες μου», που ξανανοίγει την εφαρμογή με το ενημερωμένο αρχείο. */
+  const TIPS_SHORTCUT = 'Τιπς στο iCloud';
+  const tipsSyncOn = () => !!state.guide.tips && !state.demo;
+  const pendingCount = () => Object.keys(state.tipsPending).length;
+  function syncTips() {
+    const lines = Object.keys(state.tipsPending).sort().map(k => O.tipsLine(k, state.tipsPending[k]));
+    if (!lines.length) return false;
+    location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(TIPS_SHORTCUT)}&input=text&text=${encodeURIComponent(lines.join('\n'))}`;
+    return true;
   }
   function openTips(key) {
     hideTip();
@@ -1442,6 +1499,10 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       ? tipsAdded.map(a => `<span class="ev"><b class="num">+${esc(money(a))}</b></span>`).join('')
         + `<button type="button" class="link" id="tipsUndo">Αναίρεση τελευταίου</button>`
       : '<span class="muted">Πάτα ένα ποσό κάθε φορά που παίρνεις τιπ.</span>';
+    $('#tipsBackup').innerHTML = state.demo ? ''
+      : tipsSyncOn()
+        ? (pendingCount() ? 'Με το «Τέλος» τα τιπς γράφονται και στο iCloud.' : `${icon('check')} Τα τιπς είναι και στο iCloud.`)
+        : 'Τα τιπς είναι μόνο σε αυτό το κινητό. <button type="button" class="link" data-action="guide:tips">Φύλαξέ τα στο iCloud</button>';
   }
   function addTip(amount) {
     const key = $('#dlgTips').dataset.key;
@@ -1466,6 +1527,18 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     const last = state.events[state.events.length - 1];
     box.innerHTML = `<div class="ok-line">${icon('check')}<span>Όλα δουλεύουν. ${state.events.length} καταγραφές από ${esc(dayName(O.dateKey(state.events[0].t)))}. Τελευταία: ${last.type === 'in' ? 'σύνδεση' : 'αποσύνδεση'}, ${esc(relTime(last.t, now))}.</span></div>`;
   }
+  function renderTipsHealth() {
+    const box = $('#tipsHealth');
+    if (state.demo) { box.innerHTML = '<div class="ok-line">Στο παράδειγμα τα τιπς δεν φυλάγονται πουθενά.</div>'; return; }
+    if (!tipsSyncOn()) {
+      box.innerHTML = noticeHTML('info', 'Τα τιπς είναι μόνο στο Safari', 'Αν σβηστούν τα δεδομένα του Safari, χάνονται. Με μια μικρή συντόμευση γράφονται και στο ores.txt στο iCloud, μαζί με τις ώρες.', [['guide:tips', 'Ρύθμιση (2 λεπτά)']]);
+      return;
+    }
+    const n = pendingCount();
+    box.innerHTML = n
+      ? noticeHTML('warn', n === 1 ? '1 μέρα περιμένει να γραφτεί' : `${n} μέρες περιμένουν να γραφτούν`, 'Πάτα για να τρέξει η συντόμευση «Τιπς στο iCloud».', [['sync-tips', 'Γράψ\' τα τώρα'], ['guide:tips', 'Οδηγίες']])
+      : `<div class="ok-line">${icon('check')}<span>Τα τιπς είναι και στο iCloud, μέσα στο ores.txt. Αν σβηστεί το Safari, ξαναέρχονται όταν ανοίξεις από το εικονίδιο.</span></div>`;
+  }
   function openSettings() {
     const s = state.settings;
     $('#setTarget').value = s.targetHours;
@@ -1473,6 +1546,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     $('#setWage').value = s.wage || '';
     $('#setName').value = s.name;
     renderHealth();
+    renderTipsHealth();
     $('#dlgSettings').showModal();
   }
   function readSettings() {
@@ -1575,6 +1649,12 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       btn.classList.toggle('primary', !isDone);
     });
     $('#guideProgress').textContent = `${done} από 4 έτοιμα`;
+    const tipsSec = $('#g-tips');
+    tipsSec.classList.toggle('done', !!state.guide.tips);
+    tipsSec.querySelector('.step-num').textContent = state.guide.tips ? '✓' : '€';
+    const tipsBtn = tipsSec.querySelector('[data-action="tips-setup"]');
+    tipsBtn.textContent = state.guide.tips ? 'Έγινε ✓' : 'Έγινε';
+    tipsBtn.classList.toggle('primary', !state.guide.tips);
     $('#guideMeter').style.width = `${(done / 4) * 100}%`;
   }
   function showGuide(section) {
@@ -1616,6 +1696,14 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     'next-month': () => { const [y, m] = state.month.split('-').map(Number); state.month = O.dateKey(new Date(y, m, 1).getTime()).slice(0, 7); render(); },
     day: key => openDay(key),
     tips: () => openTips(cashKey(Date.now())),
+    'sync-tips': () => { closeDialogs(); if (!syncTips()) toast('Όλα τα τιπς είναι ήδη στο iCloud ✓'); },
+    'tips-setup': () => {
+      state.guide.tips = !state.guide.tips;
+      store.set('guide', state.guide);
+      // Την πρώτη φορά στέλνουμε όλα τα τιπς που υπάρχουν ήδη.
+      if (state.guide.tips && !state.demo) { Object.assign(state.tipsPending, { ...state.tips, ...state.tipsPending }); saveData(); }
+      renderGuide();
+    },
     'add-day': () => {
       const today = O.dateKey(Date.now());
       $('#inAddDate').value = today;
@@ -1643,9 +1731,9 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     },
     clear: () => {
       if (state.demo) { exitDemo(); closeDialogs(); return; }
-      if (!window.confirm('Να σβηστούν οι ώρες, οι διορθώσεις και τα τιπς από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν. Τα τιπς όμως θα χαθούν οριστικά.')) return;
-      ['log', 'overrides', 'tips', 'bad', 'updatedAt', 'source', 'emptyAt'].forEach(k => store.remove(k));
-      Object.assign(state, { events: [], overrides: {}, tips: {}, bad: [], updatedAt: null, source: null, emptyAt: null });
+      if (!window.confirm('Να σβηστούν οι ώρες, οι διορθώσεις και τα τιπς από αυτή τη σελίδα; Το ores.txt στο iPhone δεν πειράζεται: την επόμενη φορά που θα ανοίξεις από το εικονίδιο, οι αυτόματες ώρες θα ξαναέρθουν. Τα τιπς θα ξαναέρθουν μόνο αν έχεις ρυθμίσει το αντίγραφο στο iCloud.')) return;
+      ['log', 'overrides', 'tips', 'tipsPending', 'bad', 'updatedAt', 'source', 'emptyAt'].forEach(k => store.remove(k));
+      Object.assign(state, { events: [], overrides: {}, tips: {}, tipsPending: {}, bad: [], updatedAt: null, source: null, emptyAt: null });
       closeDialogs();
       render();
       toast('Σβήστηκαν');
@@ -1731,6 +1819,10 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   });
   $('#inTipAdd').addEventListener('input', () => { $('#tipsErr').hidden = true; });
   $('#inDayTips').addEventListener('input', () => { $('#dayTipErr').hidden = true; });
+  $('#tipsDone').addEventListener('click', () => {
+    $('#dlgTips').close();
+    if (tipsSyncOn()) syncTips();
+  });
   $('#tipsFix').addEventListener('click', () => {
     const key = $('#dlgTips').dataset.key;
     $('#dlgTips').close();
