@@ -511,6 +511,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <p class="lead" style="font-size:15px">Φτιάξε δεύτερο αυτοματισμό ακριβώς όπως τον πρώτο, με δύο διαφορές:</p>
     <ul>
       <li>Στο βήμα 4 τσέκαρε <b>μόνο</b> το <b>Αποσυνδέεται</b> <span class="en">(Leaves)</span>.</li>
+      <li>Και εδώ, στο βήμα 5, κλείσε το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>, αλλιώς θα βγαίνει ειδοποίηση κάθε φορά που κόβεται το Wi‑Fi.</li>
       <li>Στο βήμα 9 γράψε <span class="copy"><code>OUT</code><button type="button" data-copy="OUT">Αντιγραφή</button></span> αντί για IN:<br>
         <span class="preview"><span class="var">Τρέχουσα ημερομηνία</span> OUT</span></li>
     </ul>
@@ -592,6 +593,16 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <details>
       <summary>Ο αυτοματισμός με ρωτάει πριν τρέξει</summary>
       <p>Άνοιξέ τον από την καρτέλα Αυτοματισμός και διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span>.</p>
+    </details>
+    <details id="g-notify">
+      <summary>Βγαίνουν ειδοποιήσεις όλη μέρα</summary>
+      <p>Το Wi‑Fi της δουλειάς κόβεται και ξαναπιάνει πολλές φορές τη μέρα (π.χ. όταν κλειδώνει η οθόνη ή όταν αλλάζεις όροφο), και κάθε φορά τρέχει ο αυτοματισμός. Στις ώρες δεν πειράζει, γιατί μετράει η πρώτη σύνδεση και η τελευταία αποσύνδεση. Οι ειδοποιήσεις όμως σταματάνε έτσι:</p>
+      <ol>
+        <li>Στις <b>Συντομεύσεις</b> → καρτέλα <b>Αυτοματισμός</b>, πάτα τον «Έφτασα».</li>
+        <li>Να είναι στο <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span> και να είναι <b>κλειστό</b> το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>. Πάτα <b>Τέλος</b>.</li>
+        <li>Κάνε το ίδιο και στον «Έφυγα». Ο διακόπτης είναι χωριστός σε κάθε αυτοματισμό.</li>
+      </ol>
+      <p>Αν δεν βλέπεις αυτόν τον διακόπτη (παλιό iOS) ή βγαίνουν ακόμα: <b>Ρυθμίσεις → Χρόνος επί οθόνης → Δραστηριότητα εφαρμογών και ιστότοπων</b> <span class="en">(Screen Time → See All App &amp; Website Activity)</span>, κατέβα στο <b>Ειδοποιήσεις</b>, πάτα <b>Συντομεύσεις</b> και κλείσε το <b>Να επιτρέπονται οι ειδοποιήσεις</b>. Έτσι κλείνουν όλες οι ειδοποιήσεις των Συντομεύσεων.</p>
     </details>
     <details>
       <summary>Λέει ότι δεν μπορεί να κάνει μετατροπή σε URL</summary>
@@ -1663,6 +1674,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     $('#main').hidden = true;
     $('#guide').hidden = false;
     const target = section && document.getElementById(`g-${section === 'format' ? 'in' : section}`);
+    if (target && target.tagName === 'DETAILS') target.open = true;
     if (target) target.scrollIntoView({ block: 'start' }); else window.scrollTo(0, 0);
   }
   function hideGuide() {
