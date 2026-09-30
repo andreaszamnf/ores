@@ -493,7 +493,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <li>Διάλεξε <b>Wi‑Fi</b>.</li>
       <li>Πάτα <b>Δίκτυο</b> <span class="en">(Network)</span> και διάλεξε το Wi‑Fi της δουλειάς. Αν έχει δύο δίκτυα (π.χ. ένα που τελειώνει σε «5G»), διάλεξε και τα δύο.</li>
       <li>Άφησε τσεκαρισμένο <b>μόνο</b> το <b>Συνδέεται</b> <span class="en">(Joins)</span>.</li>
-      <li>Διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span> και κλείσε το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>. Πάτα <b>Επόμενο</b> <span class="en">(Next)</span>.</li>
+      <li>Διάλεξε <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span>. Αν υπάρχει διακόπτης <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>, κλείσ' τον. Αν δεν υπάρχει, δες πιο κάτω το «Βγαίνουν ειδοποιήσεις όλη μέρα». Πάτα <b>Επόμενο</b> <span class="en">(Next)</span>.</li>
       <li>Πάτα <b>Νέος κενός αυτοματισμός</b> <span class="en">(New Blank Automation)</span> → <b>Προσθήκη ενέργειας</b> <span class="en">(Add Action)</span>. Στην αναζήτηση γράψε <b>αρχείο κειμένου</b> <span class="en">(append)</span> και διάλεξε <b>Προσάρτηση σε αρχείο κειμένου</b> <span class="en">(Append to Text File)</span>.</li>
       <li>Πάτα στο πεδίο του κειμένου. Στη γραμμή πάνω από το πληκτρολόγιο πάτα <b>Τρέχουσα ημερομηνία</b> <span class="en">(Current Date)</span>. Θα μπει σαν μπλε κουτάκι.</li>
       <li>Πάτα πάνω στο μπλε κουτάκι → <b>Μορφή ημερομηνίας</b> <span class="en">(Date Format)</span> → <b>Προσαρμοσμένη</b> <span class="en">(Custom)</span> και γράψε ακριβώς:<br>
@@ -511,7 +511,6 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
     <p class="lead" style="font-size:15px">Φτιάξε δεύτερο αυτοματισμό ακριβώς όπως τον πρώτο, με δύο διαφορές:</p>
     <ul>
       <li>Στο βήμα 4 τσέκαρε <b>μόνο</b> το <b>Αποσυνδέεται</b> <span class="en">(Leaves)</span>.</li>
-      <li>Και εδώ, στο βήμα 5, κλείσε το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>, αλλιώς θα βγαίνει ειδοποίηση κάθε φορά που κόβεται το Wi‑Fi.</li>
       <li>Στο βήμα 9 γράψε <span class="copy"><code>OUT</code><button type="button" data-copy="OUT">Αντιγραφή</button></span> αντί για IN:<br>
         <span class="preview"><span class="var">Τρέχουσα ημερομηνία</span> OUT</span></li>
     </ul>
@@ -598,11 +597,11 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
       <summary>Βγαίνουν ειδοποιήσεις όλη μέρα</summary>
       <p>Το Wi‑Fi της δουλειάς κόβεται και ξαναπιάνει πολλές φορές τη μέρα (π.χ. όταν κλειδώνει η οθόνη ή όταν αλλάζεις όροφο), και κάθε φορά τρέχει ο αυτοματισμός. Στις ώρες δεν πειράζει, γιατί μετράει η πρώτη σύνδεση και η τελευταία αποσύνδεση. Οι ειδοποιήσεις όμως σταματάνε έτσι:</p>
       <ol>
-        <li>Στις <b>Συντομεύσεις</b> → καρτέλα <b>Αυτοματισμός</b>, πάτα τον «Έφτασα».</li>
-        <li>Να είναι στο <b>Εκτέλεση αμέσως</b> <span class="en">(Run Immediately)</span> και να είναι <b>κλειστό</b> το <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>. Πάτα <b>Τέλος</b>.</li>
-        <li>Κάνε το ίδιο και στον «Έφυγα». Ο διακόπτης είναι χωριστός σε κάθε αυτοματισμό.</li>
+        <li>Άνοιξε <b>Ρυθμίσεις → Χρόνος επί οθόνης → Δραστηριότητα εφαρμογών και ιστότοπων</b> <span class="en">(Screen Time → See All App &amp; Website Activity)</span>.</li>
+        <li>Κατέβα στο <b>Ειδοποιήσεις</b> <span class="en">(Notifications)</span> και πάτα <b>Συντομεύσεις</b> <span class="en">(Shortcuts)</span>.</li>
+        <li>Κλείσε το <b>Να επιτρέπονται οι ειδοποιήσεις</b> <span class="en">(Allow Notifications)</span>.</li>
       </ol>
-      <p>Αν δεν βλέπεις αυτόν τον διακόπτη (παλιό iOS) ή βγαίνουν ακόμα: <b>Ρυθμίσεις → Χρόνος επί οθόνης → Δραστηριότητα εφαρμογών και ιστότοπων</b> <span class="en">(Screen Time → See All App &amp; Website Activity)</span>, κατέβα στο <b>Ειδοποιήσεις</b>, πάτα <b>Συντομεύσεις</b> και κλείσε το <b>Να επιτρέπονται οι ειδοποιήσεις</b>. Έτσι κλείνουν όλες οι ειδοποιήσεις των Συντομεύσεων.</p>
+      <p>Έτσι κλείνουν όλες οι ειδοποιήσεις των Συντομεύσεων. Οι αυτοματισμοί συνεχίζουν να γράφουν τις ώρες κανονικά. Αν στον αυτοματισμό υπάρχει διακόπτης <b>Ειδοποίηση κατά την εκτέλεση</b> <span class="en">(Notify When Run)</span>, μπορείς εναλλακτικά να τον κλείσεις και στον «Έφτασα» και στον «Έφυγα».</p>
     </details>
     <details>
       <summary>Λέει ότι δεν μπορεί να κάνει μετατροπή σε URL</summary>
