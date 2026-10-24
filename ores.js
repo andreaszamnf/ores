@@ -175,7 +175,8 @@
     return out.sort((a, b) => a.t - b.t || (a.type === b.type ? 0 : a.type === 'in' ? -1 : 1));
   }
 
-  const TIPS_LINE = /^TIPS\s+(\d{4}-\d{2}-\d{2})\s*=\s*(\d+(?:[.,]\d+)?)\s*$/i;
+  // Οπουδήποτε στη γραμμή: αν λείπει μια αλλαγή γραμμής, κολλάει πάνω σε IN/OUT (π.χ. «…OUTTIPS 2026-09-23 = 5.002026-09-24 …»).
+  const TIPS_RE = /TIPS\s*(\d{4}-\d{2}-\d{2})\s*=\s*(\d+(?:[.,]\d{1,2})?)/gi;
   const tipsLine = (key, value) => `TIPS ${key} = ${(value || 0).toFixed(2)}`;
 
   function parseLog(text) {
@@ -183,13 +184,11 @@
     const bad = [];
     const tips = {};
     for (const raw of String(text == null ? '' : text).split(/\r\n|\r|\n/)) {
-      const line = raw.trim();
+      const line = raw.replace(TIPS_RE, (_, key, value) => {
+        tips[key] = Math.round(parseFloat(value.replace(',', '.')) * 100) / 100;
+        return ' ';
+      }).trim();
       if (!line) continue;
-      const tip = TIPS_LINE.exec(line);
-      if (tip) {
-        const v = parseFloat(tip[2].replace(',', '.'));
-        if (Number.isFinite(v)) { tips[tip[1]] = Math.round(v * 100) / 100; continue; }
-      }
       const stamps = findStamps(line);
       if (!stamps.length) {
         if (line[0] !== '#') bad.push(line);

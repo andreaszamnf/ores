@@ -1478,7 +1478,7 @@ dialog[open] .sheet { animation: rise .28s cubic-bezier(.2, .8, .2, 1); }
   function syncTips() {
     const lines = Object.keys(state.tipsPending).sort().map(k => O.tipsLine(k, state.tipsPending[k]));
     if (!lines.length) return false;
-    location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(TIPS_SHORTCUT)}&input=text&text=${encodeURIComponent(lines.join('\n'))}`;
+    location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(TIPS_SHORTCUT)}&input=text&text=${encodeURIComponent(`\n${lines.join('\n')}\n`)}`; // αλλαγές γραμμής γύρω γύρω, για να μην κολλήσουν σε IN/OUT
     return true;
   }
   function openTips(key) {
